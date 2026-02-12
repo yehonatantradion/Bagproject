@@ -4,62 +4,91 @@ import android.content.Intent;
 import android.os.Bundle;
 import android.widget.Button;
 import android.widget.TextView;
-import android.widget.Toast;
+import androidx.annotation.NonNull;
 import androidx.appcompat.app.AppCompatActivity;
 import com.example.myapplication.R;
+import com.example.myapplication.model.Shift;
+import com.example.myapplication.services.DatabaseService;
+import com.google.firebase.database.DataSnapshot;
+import com.google.firebase.database.DatabaseError;
+import com.google.firebase.database.ValueEventListener;
+import com.jakewharton.threetenabp.AndroidThreeTen;
 import com.prolificinteractive.materialcalendarview.CalendarDay;
 import com.prolificinteractive.materialcalendarview.MaterialCalendarView;
 
 public class AddShift extends AppCompatActivity {
 
     private MaterialCalendarView calendarView;
-    private TextView tvSelectedDate;
+    private TextView tvSelectedDate, tvAssignedWorkers;
     private Button btnGoToManageWorkers;
     private CalendarDay selectedDay = CalendarDay.today();
+    private DatabaseService dbService;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
+        AndroidThreeTen.init(this);
         setContentView(R.layout.activity_add_shift);
 
+        dbService = DatabaseService.getInstance();
         calendarView = findViewById(R.id.calendarView);
         tvSelectedDate = findViewById(R.id.tvSelectedDate);
+        tvAssignedWorkers = findViewById(R.id.tvAssignedWorkers);
         btnGoToManageWorkers = findViewById(R.id.btnGoToManageWorkers);
 
-        // הגבלת לוח השנה לתאריך המינימלי (היום)
-        calendarView.state().edit()
-                .setMinimumDate(CalendarDay.today())
-                .commit();
+        calendarView.state().edit().setMinimumDate(CalendarDay.today()).commit();
 
-        updateDateText(selectedDay);
+        fetchShiftData(selectedDay);
 
         calendarView.setOnDateChangedListener((widget, date, selected) -> {
-            // הגנה נוספת ליתר ביטחון
-            if (date.isBefore(CalendarDay.today())) {
-                Toast.makeText(this, "לא ניתן לבחור תאריך שעבר", Toast.LENGTH_SHORT).show();
-                calendarView.setSelectedDate(CalendarDay.today());
-                selectedDay = CalendarDay.today();
-            } else {
-                selectedDay = date;
-            }
-            updateDateText(selectedDay);
+            selectedDay = date;
+            fetchShiftData(selectedDay);
         });
 
         btnGoToManageWorkers.setOnClickListener(v -> {
-            // וידוא סופי לפני מעבר למסך הבא
-            if (selectedDay.isBefore(CalendarDay.today())) {
-                Toast.makeText(this, "אנא בחר תאריך תקין", Toast.LENGTH_SHORT).show();
-                return;
-            }
-
-            String dateString = selectedDay.getDay() + "/" + selectedDay.getMonth() + "/" + selectedDay.getYear();
+            String dateString = formatDate(selectedDay);
             Intent intent = new Intent(AddShift.this, ManageShiftsActivity.class);
             intent.putExtra("SELECTED_DATE", dateString);
             startActivity(intent);
         });
     }
 
-    private void updateDateText(CalendarDay day) {
-        tvSelectedDate.setText(String.format("נבחר: %02d/%02d/%d", day.getDay(), day.getMonth(), day.getYear()));
+    private void fetchShiftData(CalendarDay day) {
+        String dateString = formatDate(day);
+        tvSelectedDate.setText("תאריך: " + dateString);
+        tvAssignedWorkers.setText("בודק משמרות...");
+
+        // התיקון כאן: שימוש ב-getDbReference() וב-child("Shifts")
+        dbService.getDbReference().child("Shifts")
+                .orderByChild("date").equalTo(dateString)
+                .addListenerForSingleValueEvent(new ValueEventListener() {
+                    @Override
+                    public void onDataChange(@NonNull DataSnapshot snapshot) {
+                        if (snapshot.exists()) {
+                            StringBuilder workersList = new StringBuilder("פרטי משמרת:\n");
+                            for (DataSnapshot shiftSnapshot : snapshot.getChildren()) {
+                                Shift shift = shiftSnapshot.getValue(Shift.class);
+                                if (shift != null) {
+                                    workersList.append("סוג: ").append(shift.getType()).append("\n");
+                                    if (shift.getNotes() != null) {
+                                        workersList.append("עובדים: ").append(shift.getNotes()).append("\n");
+                                    }
+                                }
+                            }
+                            tvAssignedWorkers.setText(workersList.toString());
+                        } else {
+                            tvAssignedWorkers.setText("אין משמרת רשומה לתאריך זה.");
+                        }
+                    }
+
+                    @Override
+                    public void onCancelled(@NonNull DatabaseError error) {
+                        tvAssignedWorkers.setText("שגיאה בטעינת נתונים.");
+                    }
+                });
+    }
+
+    private String formatDate(CalendarDay day) {
+        return String.format("%02d/%02d/%d", day.getDay(), day.getMonth(), day.getYear());
     }
 }

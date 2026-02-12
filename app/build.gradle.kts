@@ -42,5 +42,8 @@ dependencies {
 
     // ✅ הוספת הספרייה שחסרה לך כדי שהיומן יעבוד
     implementation("com.github.prolificinteractive:material-calendarview:2.0.1")
+    // ✅ הוספת ThreeTenABP לפתרון שגיאת ה-LocalDate
+    implementation("com.jakewharton.threetenabp:threetenabp:1.4.4")
+
     implementation(libs.recyclerview)
 }

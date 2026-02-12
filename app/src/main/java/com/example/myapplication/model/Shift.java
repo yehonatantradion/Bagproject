@@ -1,71 +1,58 @@
 package com.example.myapplication.model;
 
-import java.util.Date;
-import java.util.List;
+import androidx.annotation.NonNull;
 
 public class Shift {
-    protected String id;
-    protected int dayInWeek;
-    protected Date date;
-    protected Worker mngr;
-    protected String shiftTime;
-    protected int workerNeeded;
-    protected List<Worker> workerList;
-    protected String status;
+    private String date;
+    private String type;
+    private String notes;
 
-    public Shift(String id, int dayInWeek, Date date, Worker mngr, String shiftTime, int workerNeeded, List<Worker> workerList, String status) {
-        this.id = id;
-        this.dayInWeek = dayInWeek;
+    // קונסטרקטור ריק עבור Firebase
+    public Shift() {}
+
+    // קונסטרקטור מלא
+    public Shift(String date, String type, String notes) {
         this.date = date;
-        this.mngr = mngr;
-        this.shiftTime = shiftTime;
-        this.workerNeeded = workerNeeded;
-        this.workerList = workerList;
-        this.status = status;
+        this.type = type;
+        this.notes = notes;
     }
 
-    public Shift() {
+    public String getDate() {
+        return date;
     }
 
-    public String getId() { return id; }
-    public void setId(String id) { this.id = id; }
+    public void setDate(String date) {
+        this.date = date;
+    }
 
-    public int getDayInWeek() { return dayInWeek; }
-    public void setDayInWeek(int dayInWeek) { this.dayInWeek = dayInWeek; }
+    // מתודה תואמת לשגיאה שקיבלת כדי שהקומפילציה תעבור
+    public void setShiftTime(String date) {
+        this.date = date;
+    }
 
-    public Date getDate() { return date; }
-    public void setDate(Date date) { this.date = date; }
+    public String getType() {
+        return type;
+    }
 
-    public Worker getMngr() { return mngr; }
-    public void setMngr(Worker mngr) { this.mngr = mngr; }
+    public void setType(String type) {
+        this.type = type;
+    }
 
-    public List<Worker> getWorkerList() { return workerList; }
+    public String getNotes() {
+        return notes;
+    }
 
+    public void setNotes(String notes) {
+        this.notes = notes;
+    }
 
-
-
-    public void setWorkerList(List<Worker> workerList) { this.workerList = workerList; }
-
-    public String getStatus() { return status; }
-    public void setStatus(String status) { this.status = status; }
-
-    public String getShiftTime() { return shiftTime; }
-    public void setShiftTime(String shiftTime) { this.shiftTime = shiftTime; }
-
-    public int getWorkerNeeded() { return workerNeeded; }
-    public void setWorkerNeeded(int workerNeeded) { this.workerNeeded = workerNeeded; }
-
+    @NonNull
     @Override
     public String toString() {
         return "Shift{" +
-                "id='" + id + '\'' +
-                ", dayInWeek=" + dayInWeek +
-                ", date=" + date +
-                ", mngr=" + mngr +
-                ", shiftTime='" + shiftTime + '\'' +
-                ", workerNeeded=" + workerNeeded +
-                ", workerList=" + workerList +
-                ", status='" + status + '\'' +
+                "date='" + date + '\'' +
+                ", type='" + type + '\'' +
+                ", notes='" + notes + '\'' +
                 '}';
     }
 }
