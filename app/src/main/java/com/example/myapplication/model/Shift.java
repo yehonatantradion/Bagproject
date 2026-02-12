@@ -10,7 +10,7 @@ public class Shift {
     protected Worker mngr;
     protected String shiftTime;
     protected int workerNeeded;
-    protected List <Worker> workerList;
+    protected List<Worker> workerList;
     protected String status;
 
     public Shift(String id, int dayInWeek, Date date, Worker mngr, String shiftTime, int workerNeeded, List<Worker> workerList, String status) {
@@ -24,74 +24,36 @@ public class Shift {
         this.status = status;
     }
 
-
-
-    public String getId() {
-        return id;
-    }
-
-    public void setId(String id) {
-        this.id = id;
-    }
-
-    public int getDayInWeek() {
-        return dayInWeek;
-    }
-
-    public void setDayInWeek(int dayInWeek) {
-        this.dayInWeek = dayInWeek;
-    }
-
-    public Date getDate() {
-        return date;
-    }
-
-    public void setDate(Date date) {
-        this.date = date;
-    }
-
-    public Worker getMngr() {
-        return mngr;
-    }
-
-    public void setMngr(Worker mngr) {
-        this.mngr = mngr;
-    }
-
-    public List<Worker> getWorkerList() {
-        return workerList;
-    }
-
-    public void setWorkerList(List<Worker> workerList) {
-        this.workerList = workerList;
-    }
-
-    public String getStatus() {
-        return status;
-    }
-
-    public void setStatus(String status) {
-        this.status = status;
-    }
-
     public Shift() {
     }
 
-    public String getShiftTime() {
-        return shiftTime;
-    }
+    public String getId() { return id; }
+    public void setId(String id) { this.id = id; }
 
-    public void setShiftTime(String shiftTime) {
-        this.shiftTime = shiftTime;
-    }
+    public int getDayInWeek() { return dayInWeek; }
+    public void setDayInWeek(int dayInWeek) { this.dayInWeek = dayInWeek; }
 
-    public int getWorkerNeeded() {
-        return workerNeeded;
-    }
+    public Date getDate() { return date; }
+    public void setDate(Date date) { this.date = date; }
 
-    public void setWorkerNeeded(int workerNeeded) {
-        this.workerNeeded = workerNeeded;
-    }
+    public Worker getMngr() { return mngr; }
+    public void setMngr(Worker mngr) { this.mngr = mngr; }
+
+    public List<Worker> getWorkerList() { return workerList; }
+
+
+
+
+    public void setWorkerList(List<Worker> workerList) { this.workerList = workerList; }
+
+    public String getStatus() { return status; }
+    public void setStatus(String status) { this.status = status; }
+
+    public String getShiftTime() { return shiftTime; }
+    public void setShiftTime(String shiftTime) { this.shiftTime = shiftTime; }
+
+    public int getWorkerNeeded() { return workerNeeded; }
+    public void setWorkerNeeded(int workerNeeded) { this.workerNeeded = workerNeeded; }
 
     @Override
     public String toString() {
@@ -106,6 +68,4 @@ public class Shift {
                 ", status='" + status + '\'' +
                 '}';
     }
-
-
 }

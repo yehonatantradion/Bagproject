@@ -4,6 +4,7 @@ import android.content.Intent;
 import android.os.Bundle;
 import android.widget.Button;
 import android.widget.TextView;
+import android.widget.Toast;
 import androidx.appcompat.app.AppCompatActivity;
 import com.example.myapplication.R;
 import com.prolificinteractive.materialcalendarview.CalendarDay;
@@ -25,19 +26,33 @@ public class AddShift extends AppCompatActivity {
         tvSelectedDate = findViewById(R.id.tvSelectedDate);
         btnGoToManageWorkers = findViewById(R.id.btnGoToManageWorkers);
 
-        // עדכון ראשוני של התאריך
+        // הגבלת לוח השנה לתאריך המינימלי (היום)
+        calendarView.state().edit()
+                .setMinimumDate(CalendarDay.today())
+                .commit();
+
         updateDateText(selectedDay);
 
-        // האזנה לשינוי תאריך בלוח
         calendarView.setOnDateChangedListener((widget, date, selected) -> {
-            selectedDay = date;
+            // הגנה נוספת ליתר ביטחון
+            if (date.isBefore(CalendarDay.today())) {
+                Toast.makeText(this, "לא ניתן לבחור תאריך שעבר", Toast.LENGTH_SHORT).show();
+                calendarView.setSelectedDate(CalendarDay.today());
+                selectedDay = CalendarDay.today();
+            } else {
+                selectedDay = date;
+            }
             updateDateText(selectedDay);
         });
 
-        // לחיצה על הכפתור למעבר למסך ניהול עובדים
         btnGoToManageWorkers.setOnClickListener(v -> {
-            String dateString = selectedDay.getDay() + "/" + selectedDay.getMonth() + "/" + selectedDay.getYear();
+            // וידוא סופי לפני מעבר למסך הבא
+            if (selectedDay.isBefore(CalendarDay.today())) {
+                Toast.makeText(this, "אנא בחר תאריך תקין", Toast.LENGTH_SHORT).show();
+                return;
+            }
 
+            String dateString = selectedDay.getDay() + "/" + selectedDay.getMonth() + "/" + selectedDay.getYear();
             Intent intent = new Intent(AddShift.this, ManageShiftsActivity.class);
             intent.putExtra("SELECTED_DATE", dateString);
             startActivity(intent);

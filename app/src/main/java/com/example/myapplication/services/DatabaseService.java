@@ -5,7 +5,7 @@ import android.util.Log;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 
-
+import com.example.myapplication.model.Shift;
 import com.example.myapplication.model.Worker;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.database.DataSnapshot;
@@ -36,8 +36,9 @@ public class DatabaseService {
     /// paths for different data types in the database
     /// @see DatabaseService#readData(String)
     private static final String WORKER_PATH = "worker",
-                                FOODS_PATH = "foods",
-                                CARTS_PATH = "carts";
+            FOODS_PATH = "foods",
+            CARTS_PATH = "carts",
+            SHIFTS_PATH = "shifts"; // הוספת נתיב למשמרות
 
     /// callback interface for database operations
     /// @param <T> the type of the object to return
@@ -94,8 +95,8 @@ public class DatabaseService {
             } else {
                 if (callback == null) return;
                 callback.onCompleted(null);
-        }
-    });
+            }
+        });
     }
 
     /// remove data from the database at a specific path
@@ -110,8 +111,8 @@ public class DatabaseService {
             } else {
                 if (callback == null) return;
                 callback.onCompleted(null);
-        }
-    });
+            }
+        });
     }
 
     /// read data from the database at a specific path
@@ -226,35 +227,35 @@ public class DatabaseService {
     /// @see DatabaseCallback
     /// @see Worker
     public void createNewWorker(@NotNull final Worker worker,
-                              @Nullable final DatabaseCallback<String> callback) {
+                                @Nullable final DatabaseCallback<String> callback) {
         FirebaseAuth mAuth = FirebaseAuth.getInstance();
         mAuth.createUserWithEmailAndPassword(worker.getEmail(), worker.getPass())
-            .addOnCompleteListener(task -> {
-                if (task.isSuccessful()) {
-                    Log.d("TAG", "createWorkerWithEmail:success");
-                    String uid = FirebaseAuth.getInstance().getCurrentUser().getUid();
-                    worker.setId(uid);
-                    writeData(WORKER_PATH + "/" + uid, worker, new DatabaseCallback<Void>() {
-                        @Override
-                        public void onCompleted(Void v) {
-                            if (callback != null) callback.onCompleted(uid);
-                        }
+                .addOnCompleteListener(task -> {
+                    if (task.isSuccessful()) {
+                        Log.d("TAG", "createWorkerWithEmail:success");
+                        String uid = FirebaseAuth.getInstance().getCurrentUser().getUid();
+                        worker.setId(uid);
+                        writeData(WORKER_PATH + "/" + uid, worker, new DatabaseCallback<Void>() {
+                            @Override
+                            public void onCompleted(Void v) {
+                                if (callback != null) callback.onCompleted(uid);
+                            }
 
-                        @Override
-                        public void onFailed(Exception e) {
-                            if (callback != null) callback.onFailed(e);
-                        }
-                    });
-                } else {
-                    Log.w("TAG", "createWorkerWithEmail:failure", task.getException());
-                    if (callback != null)
-                        callback.onFailed(task.getException());
-                }
-            });
+                            @Override
+                            public void onFailed(Exception e) {
+                                if (callback != null) callback.onFailed(e);
+                            }
+                        });
+                    } else {
+                        Log.w("TAG", "createWorkerWithEmail:failure", task.getException());
+                        if (callback != null)
+                            callback.onFailed(task.getException());
+                    }
+                });
     }
 
 
-/// Login with email and password
+    /// Login with email and password
     /// @param email , password
     /// @param callback the callback to call when the operation is completed
     ///              the callback will receive String (worker id)
@@ -263,7 +264,7 @@ public class DatabaseService {
     /// @see FirebaseAuth
 
     public void LoginWorker(@NotNull final String email,final String password,
-                              @Nullable final DatabaseCallback<String> callback) {
+                            @Nullable final DatabaseCallback<String> callback) {
 
         FirebaseAuth mAuth = FirebaseAuth.getInstance();
 
@@ -276,7 +277,7 @@ public class DatabaseService {
 
                         String uid = FirebaseAuth.getInstance().getCurrentUser().getUid();
                         callback.onCompleted(uid);
-                      
+
                     } else {
                         Log.w("TAG", "createWorkerWithEmail:failure", task.getException());
 
@@ -329,28 +330,28 @@ public class DatabaseService {
     /// @see Worker
     public void getWorkerByEmailAndPassword(@NotNull final String email, @NotNull final String password, @NotNull final DatabaseCallback<Worker> callback) {
         readData(WORKER_PATH).orderByChild("email").equalTo(email).get()
-            .addOnCompleteListener(task -> {
-                if (!task.isSuccessful()) {
-                    Log.e(TAG, "Error getting data", task.getException());
-                    callback.onFailed(task.getException());
-                    return;
-                }
-                if (task.getResult().getChildrenCount() == 0) {
-                    callback.onFailed(new Exception("Worker not found"));
-                    return;
-                }
-                for (DataSnapshot dataSnapshot : task.getResult().getChildren()) {
-                    Worker worker = dataSnapshot.getValue(Worker.class);
-                    if (worker == null || !Objects.equals(worker.getPass(), password)) {
-                        callback.onFailed(new Exception("Invalid email or password"));
+                .addOnCompleteListener(task -> {
+                    if (!task.isSuccessful()) {
+                        Log.e(TAG, "Error getting data", task.getException());
+                        callback.onFailed(task.getException());
                         return;
                     }
+                    if (task.getResult().getChildrenCount() == 0) {
+                        callback.onFailed(new Exception("Worker not found"));
+                        return;
+                    }
+                    for (DataSnapshot dataSnapshot : task.getResult().getChildren()) {
+                        Worker worker = dataSnapshot.getValue(Worker.class);
+                        if (worker == null || !Objects.equals(worker.getPass(), password)) {
+                            callback.onFailed(new Exception("Invalid email or password"));
+                            return;
+                        }
 
-                    callback.onCompleted(worker);
-                    return;
+                        callback.onCompleted(worker);
+                        return;
 
-                }
-            });
+                    }
+                });
     }
 
     /// check if an email already exists in the database
@@ -510,5 +511,15 @@ public class DatabaseService {
 
     // endregion cart section
 
-}
+    // region Shift Section
+    public String generateShiftId() {
+        return generateNewId(SHIFTS_PATH);
+    }
 
+    public void createNewShift(@NotNull final Shift shift, @Nullable final DatabaseCallback<Void> callback) {
+        if (shift.getId() == null) shift.setId(generateShiftId());
+        writeData(SHIFTS_PATH + "/" + shift.getId(), shift, callback);
+    }
+    // endregion
+
+}
