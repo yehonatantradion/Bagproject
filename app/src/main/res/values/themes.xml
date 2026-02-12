@@ -1,0 +1,11 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources xmlns:tools="http://schemas.android.com/tools">
+
+    <!-- ערכת נושא ראשית של האפליקציה -->
+    <style name="Theme.MyApplication" parent="Theme.Material3.DayNight.NoActionBar">
+        <!-- כאן אפשר לשחק עם הצבעים אם תרצה -->
+        <item name="colorPrimary">#4A80F0</item>
+        <item name="colorPrimaryContainer">#DDE7FF</item>
+    </style>
+
+</resources>

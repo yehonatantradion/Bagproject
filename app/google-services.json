@@ -1,0 +1,30 @@
+{
+  "project_info": {
+    "project_number": "732506594667",
+    "firebase_url": "https://yehonatandb-3280c-default-rtdb.firebaseio.com",
+    "project_id": "yehonatandb-3280c",
+    "storage_bucket": "yehonatandb-3280c.firebasestorage.app"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:732506594667:android:e0c36dabe021a7bfc1c02e",
+        "android_client_info": {
+          "package_name": "com.example.myapplication"
+        }
+      },
+      "oauth_client": [],
+      "api_key": [
+        {
+          "current_key": "AIzaSyA6ZenXfKy4YguKqDdrvW3R07fcpNLcV7M"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": []
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}

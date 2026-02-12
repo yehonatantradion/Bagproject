@@ -1,0 +1,61 @@
+<?xml version="1.0" encoding="utf-8"?>
+<manifest xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools" >
+
+    <application
+        android:allowBackup="true"
+        android:dataExtractionRules="@xml/data_extraction_rules"
+        android:fullBackupContent="@xml/backup_rules"
+        android:icon="@mipmap/ic_launcher"
+        android:label="@string/app_name"
+        android:roundIcon="@mipmap/ic_launcher_round"
+        android:supportsRtl="true"
+        android:theme="@style/Theme.MyApplication" >
+        <activity
+            android:name=".screens.AddShift"
+            android:exported="false" />
+        <activity
+            android:name=".screens.UsersList"
+            android:exported="false" />
+        <activity
+            android:name=".services.UsersList"
+            android:exported="false" />
+        <activity
+            android:name=".screens.SettingsActivity"
+            android:exported="false" />
+        <activity
+            android:name=".screens.ReportsActivity"
+            android:exported="false" />
+        <activity
+            android:name=".screens.TodayAttendanceActivity"
+            android:exported="false" />
+        <activity
+            android:name=".screens.ManageShiftsActivity"
+            android:exported="false" />
+        <activity
+            android:name=".screens.ManageWorkersActivity"
+            android:exported="false" />
+        <activity
+            android:name=".screens.adminpage"
+            android:exported="false" />
+        <activity
+            android:name=".screens.Login"
+            android:exported="false" /> <!-- מסך ספלאש - המסך הראשון שנטען -->
+        <activity
+            android:name=".screens.splash"
+            android:exported="true" >
+            <intent-filter>
+                <action android:name="android.intent.action.MAIN" />
+
+                <category android:name="android.intent.category.LAUNCHER" />
+            </intent-filter>
+        </activity> <!-- עמוד הבית -->
+        <activity
+            android:name=".screens.MainActivity"
+            android:exported="false" /> <!-- עמוד הרשמה -->
+        <activity
+            android:name=".screens.Register"
+            android:exported="false" />
+    </application>
+
+</manifest>
