@@ -10,6 +10,8 @@ import androidx.appcompat.app.AppCompatActivity;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 import com.example.myapplication.R;
+import com.example.myapplication.adapters.SelectedWorkerAdapter;
+import com.example.myapplication.adapters.WorkerAdapter;
 import com.example.myapplication.model.Worker;
 import com.example.myapplication.services.DatabaseService;
 import com.example.myapplication.services.Shift;
@@ -19,14 +21,22 @@ import java.util.List;
 
 public class ManageShiftsActivity extends AppCompatActivity {
 
-    private TextView tvSelectedDateDisplay, tvNames;
-    private RecyclerView rvEmployeesList;
+    private TextView tvSelectedDateDisplay;
+    private RecyclerView rvEmployeesList; // רשימת זמינים
+    private RecyclerView rvSelectedWorkers; // רשימת נבחרים (חדש)
     private Button btnSave;
     private DatabaseService databaseService;
-    private List<Worker> workerList = new ArrayList<>();
+
+    // רשימות נתונים
+    private List<Worker> allWorkersList = new ArrayList<>();
     private List<Worker> workersToShift = new ArrayList<>();
-    private WorkerAdapter adapter;
-    private String names = "";
+
+    // אדפטרים
+    private WorkerAdapter availableAdapter;
+    private SelectedWorkerAdapter selectedAdapter; // האדפטר החדש
+
+    private String dateFromIntent;
+    private Shift existingShift;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -37,61 +47,159 @@ public class ManageShiftsActivity extends AppCompatActivity {
         databaseService = DatabaseService.getInstance();
         getWindow().getDecorView().setLayoutDirection(View.LAYOUT_DIRECTION_RTL);
 
-        tvNames = findViewById(R.id.tvWorkersShift);
+        // אתחול Views
         rvEmployeesList = findViewById(R.id.rvEmployeesList);
+        rvSelectedWorkers = findViewById(R.id.rvSelectedWorkers);
         tvSelectedDateDisplay = findViewById(R.id.tvSelectedDateDisplay);
         btnSave = findViewById(R.id.btnSaveShift);
 
+        // הגדרת Layout Managers
         rvEmployeesList.setLayoutManager(new LinearLayoutManager(this));
+        // רשימה אופקית לנבחרים
+        rvSelectedWorkers.setLayoutManager(new LinearLayoutManager(this, LinearLayoutManager.HORIZONTAL, false));
 
-        String dateString = getIntent().getStringExtra("SELECTED_DATE");
-        if (dateString != null) {
-            tvSelectedDateDisplay.setText("ניהול משמרת לתאריך: " + dateString);
+        dateFromIntent = getIntent().getStringExtra("SELECTED_DATE");
+        if (dateFromIntent != null) {
+            tvSelectedDateDisplay.setText("ניהול משמרת: " + dateFromIntent);
+            checkAndLoadExistingShift(dateFromIntent);
+        } else {
+            setupAdapters();
+            loadAllWorkers();
         }
 
-        setupRecyclerView();
+        btnSave.setOnClickListener(v -> saveShift());
+    }
 
-        btnSave.setOnClickListener(v -> {
-            if (workersToShift.isEmpty()) {
-                Toast.makeText(this, "אנא בחר לפחות עובד אחד", Toast.LENGTH_SHORT).show();
-                return;
+    private void setupAdapters() {
+        // 1. אדפטר לעובדים זמינים (לחיצה = הוספה למשמרת)
+        availableAdapter = new WorkerAdapter(allWorkersList, (worker, position) -> {
+            moveWorkerToShift(worker);
+        });
+        rvEmployeesList.setAdapter(availableAdapter);
+
+        // 2. אדפטר לעובדים נבחרים (לחיצה = הסרה מהמשמרת)
+        selectedAdapter = new SelectedWorkerAdapter(workersToShift, (worker, position) -> {
+            removeWorkerFromShift(worker);
+        });
+        rvSelectedWorkers.setAdapter(selectedAdapter);
+    }
+
+    // פונקציה להעברת עובד ל"נבחרים"
+    private void moveWorkerToShift(Worker worker) {
+        // הוספה לרשימת הנבחרים
+        workersToShift.add(worker);
+        selectedAdapter.notifyItemInserted(workersToShift.size() - 1);
+        rvSelectedWorkers.smoothScrollToPosition(workersToShift.size() - 1); // גלילה אוטומטית לסוף
+
+        // הסרה מרשימת הזמינים
+        int index = -1;
+        for (int i = 0; i < allWorkersList.size(); i++) {
+            if (allWorkersList.get(i).getId().equals(worker.getId())) {
+                index = i;
+                break;
             }
-            String shiftId = databaseService.generateShiftId();
-            Shift newShift = new Shift(shiftId, "1", new Date(), null, new ArrayList<>(workersToShift), "Planned");
-            databaseService.createNewShift(newShift, new DatabaseService.DatabaseCallback<Void>() {
-                @Override
-                public void onCompleted(Void object) {
-                    Toast.makeText(ManageShiftsActivity.this, "המשמרת נשמרה!", Toast.LENGTH_SHORT).show();
-                    finish();
+        }
+        if (index != -1) {
+            allWorkersList.remove(index);
+            availableAdapter.notifyItemRemoved(index);
+        }
+    }
+
+    // פונקציה להחזרת עובד ל"זמינים" (מחיקה)
+    private void removeWorkerFromShift(Worker worker) {
+        // הוספה חזרה לרשימת הזמינים
+        allWorkersList.add(worker);
+        availableAdapter.notifyItemInserted(allWorkersList.size() - 1);
+
+        // הסרה מרשימת הנבחרים
+        int index = -1;
+        for (int i = 0; i < workersToShift.size(); i++) {
+            if (workersToShift.get(i).getId().equals(worker.getId())) {
+                index = i;
+                break;
+            }
+        }
+        if (index != -1) {
+            workersToShift.remove(index);
+            selectedAdapter.notifyItemRemoved(index);
+        }
+    }
+
+    private void checkAndLoadExistingShift(String dateStr) {
+        databaseService.getShiftByDate(dateStr, new DatabaseService.DatabaseCallback<Shift>() {
+            @Override
+            public void onCompleted(Shift shift) {
+                existingShift = shift;
+                if (existingShift != null) {
+                    tvSelectedDateDisplay.setText("עריכת משמרת: " + dateStr);
+                    if (existingShift.getWorkerList() != null) {
+                        workersToShift.clear();
+                        workersToShift.addAll(existingShift.getWorkerList());
+                    }
                 }
-                @Override
-                public void onFailed(Exception e) {
-                    Toast.makeText(ManageShiftsActivity.this, "שגיאה בשמירה", Toast.LENGTH_SHORT).show();
-                }
-            });
+
+                // אתחול האדפטרים והנתונים רק אחרי שקיבלנו תשובה מהשרת
+                setupAdapters();
+                loadAllWorkers();
+            }
+
+            @Override
+            public void onFailed(Exception e) {
+                setupAdapters();
+                loadAllWorkers();
+            }
         });
     }
 
-    private void setupRecyclerView() {
-        adapter = new WorkerAdapter(workerList, (worker, position) -> {
-            workersToShift.add(worker);
-            names += (names.isEmpty() ? "" : ", ") + worker.getfName();
-            tvNames.setText("עובדים: " + names);
-            workerList.remove(position);
-            adapter.notifyItemRemoved(position);
-            adapter.notifyItemRangeChanged(position, workerList.size());
-        });
-        rvEmployeesList.setAdapter(adapter);
-
+    private void loadAllWorkers() {
         databaseService.getWorkerList(new DatabaseService.DatabaseCallback<List<Worker>>() {
             @Override
-            public void onCompleted(List<Worker> allWorkers) {
-                workerList.clear();
-                if (allWorkers != null) workerList.addAll(allWorkers);
-                adapter.notifyDataSetChanged();
+            public void onCompleted(List<Worker> workers) {
+                allWorkersList.clear();
+                if (workers != null) {
+                    for (Worker w : workers) {
+                        // סינון: הוסף לרשימה הכללית רק אם הוא לא נמצא כבר ברשימת הנבחרים
+                        boolean isAlreadySelected = false;
+                        for (Worker selected : workersToShift) {
+                            if (selected.getId() != null && w.getId() != null && selected.getId().equals(w.getId())) {
+                                isAlreadySelected = true;
+                                break;
+                            }
+                        }
+                        if (!isAlreadySelected) {
+                            allWorkersList.add(w);
+                        }
+                    }
+                }
+                availableAdapter.notifyDataSetChanged();
+                selectedAdapter.notifyDataSetChanged();
             }
             @Override
-            public void onFailed(Exception e) { }
+            public void onFailed(Exception e) {
+                Toast.makeText(ManageShiftsActivity.this, "שגיאה בטעינת עובדים", Toast.LENGTH_SHORT).show();
+            }
+        });
+    }
+
+    private void saveShift() {
+        if (workersToShift.isEmpty()) {
+            Toast.makeText(this, "אנא בחר לפחות עובד אחד", Toast.LENGTH_SHORT).show();
+            return;
+        }
+
+        String id = (existingShift != null) ? existingShift.getId() : databaseService.generateShiftId();
+        Shift shift = new Shift(id, dateFromIntent, new Date(), null, new ArrayList<>(workersToShift), "Planned");
+
+        databaseService.createNewShift(shift, new DatabaseService.DatabaseCallback<Void>() {
+            @Override
+            public void onCompleted(Void object) {
+                Toast.makeText(ManageShiftsActivity.this, "המשמרת נשמרה בהצלחה!", Toast.LENGTH_SHORT).show();
+                finish();
+            }
+            @Override
+            public void onFailed(Exception e) {
+                Toast.makeText(ManageShiftsActivity.this, "שגיאה בשמירה", Toast.LENGTH_SHORT).show();
+            }
         });
     }
 }

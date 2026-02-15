@@ -1,4 +1,4 @@
-package com.example.myapplication.screens;
+package com.example.myapplication.adapters;
 
 import android.view.LayoutInflater;
 import android.view.View;
