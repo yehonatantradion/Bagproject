@@ -1,23 +1,28 @@
 package com.example.myapplication.screens;
 
 import android.content.Intent;
+import android.graphics.Color;
 import android.os.Bundle;
-import android.util.Log;
+import android.view.View;
 import android.widget.Button;
 import android.widget.TextView;
 import android.widget.Toast;
 import androidx.appcompat.app.AppCompatActivity;
 import com.example.myapplication.R;
+import com.example.myapplication.model.Worker;
 import com.example.myapplication.services.DatabaseService;
 import com.example.myapplication.services.Shift;
 import com.prolificinteractive.materialcalendarview.CalendarDay;
 import com.prolificinteractive.materialcalendarview.MaterialCalendarView;
+import java.util.Date;
 
 public class AddShift extends AppCompatActivity {
 
     private MaterialCalendarView calendarView;
     private TextView tvSelectedDate;
+    private TextView tvWorkerSummary;
     private Button btnGoToManageWorkers;
+    private Button btnBack; // הכפתור החדש
     private CalendarDay selectedDay;
     private DatabaseService dbService;
 
@@ -27,15 +32,19 @@ public class AddShift extends AppCompatActivity {
         setContentView(R.layout.activity_add_shift);
 
         dbService = DatabaseService.getInstance();
+
+        // מחיקת משמרות עבר בכניסה למסך
+        dbService.deletePastShifts();
+
         calendarView = findViewById(R.id.calendarView);
         tvSelectedDate = findViewById(R.id.tvSelectedDate);
+        tvWorkerSummary = findViewById(R.id.tvWorkerSummary);
         btnGoToManageWorkers = findViewById(R.id.btnGoToManageWorkers);
+        btnBack = findViewById(R.id.btnBack); // חיבור הכפתור
 
-        // אתחול לתאריך של היום
         selectedDay = CalendarDay.today();
         checkForExistingShift(selectedDay);
 
-        // מאזין לשינוי תאריך
         calendarView.setOnDateChangedListener((widget, date, selected) -> {
             selectedDay = date;
             checkForExistingShift(selectedDay);
@@ -47,45 +56,66 @@ public class AddShift extends AppCompatActivity {
             intent.putExtra("SELECTED_DATE", dateString);
             startActivity(intent);
         });
+
+        // לוגיקה לכפתור חזרה
+        btnBack.setOnClickListener(v -> {
+            finish(); // סוגר את המסך הנוכחי וחוזר למסך הקודם
+        });
     }
 
-    // פונקציית עזר לפרמוט התאריך בצורה אחידה
     private String getFormattedDate(CalendarDay day) {
-        // חשוב: וודא שזה תואם לאיך שזה נשמר ב-DB.
-        // כרגע זה מייצר פורמט: 15/02/2026
         return String.format("%02d/%02d/%d", day.getDay(), day.getMonth(), day.getYear());
     }
 
     private void checkForExistingShift(CalendarDay day) {
         String dateToCheck = getFormattedDate(day);
 
-        // עדכון זמני למשתמש
-        tvSelectedDate.setText("בודק נתונים לתאריך: " + dateToCheck + "...");
+        // בדיקת תאריך עבר
+        if (day.isBefore(CalendarDay.today())) {
+            tvSelectedDate.setText("⛔ תאריך עבר: " + dateToCheck);
+            tvWorkerSummary.setText("לא ניתן ליצור או לערוך משמרות שהיו בעבר.");
+
+            btnGoToManageWorkers.setText("חסום");
+            btnGoToManageWorkers.setBackgroundColor(Color.GRAY);
+            btnGoToManageWorkers.setEnabled(false);
+            return;
+        }
+
+        btnGoToManageWorkers.setEnabled(true);
+        tvSelectedDate.setText("בודק נתונים...");
+        tvWorkerSummary.setText("");
 
         dbService.getShiftByDate(dateToCheck, new DatabaseService.DatabaseCallback<Shift>() {
             @Override
             public void onCompleted(Shift shift) {
-                // חובה להריץ עדכוני UI בתוך runOnUiThread
                 runOnUiThread(() -> {
                     if (shift != null) {
-                        // === מקרה 1: משמרת נמצאה ===
-                        Log.d("AddShift", "Shift found for date: " + dateToCheck);
-
+                        // === יש משמרת ===
                         int count = (shift.getWorkerList() != null) ? shift.getWorkerList().size() : 0;
-                        tvSelectedDate.setText("✅ קיימת משמרת בתאריך " + dateToCheck + "\n(" + count + " עובדים משובצים)");
+                        tvSelectedDate.setText("✅ קיימת משמרת (" + count + " עובדים)");
 
-                        btnGoToManageWorkers.setText("ערוך משמרת קיימת");
-                        // שינוי צבע לכפתור כדי שיהיה בולט (כתום לעריכה)
-                        btnGoToManageWorkers.setBackgroundColor(0xFFFFA726);
+                        if (count > 0) {
+                            StringBuilder names = new StringBuilder();
+                            for (Worker w : shift.getWorkerList()) {
+                                String name = (w.getfName() != null) ? w.getfName() : "ללא שם";
+                                names.append(name).append(", ");
+                            }
+                            if (names.length() > 2) names.setLength(names.length() - 2);
+                            tvWorkerSummary.setText("משובצים: " + names.toString());
+                        } else {
+                            tvWorkerSummary.setText("משמרת ריקה (אין עובדים)");
+                        }
+
+                        btnGoToManageWorkers.setText("ערוך משמרת");
+                        btnGoToManageWorkers.setBackgroundColor(0xFFFFA726); // כתום
+
                     } else {
-                        // === מקרה 2: לא נמצאה משמרת ===
-                        Log.d("AddShift", "No shift found for date: " + dateToCheck);
-
-                        tvSelectedDate.setText("📅 תאריך נבחר: " + dateToCheck + "\n(לא קיימת משמרת)");
+                        // === אין משמרת ===
+                        tvSelectedDate.setText("📅 תאריך: " + dateToCheck);
+                        tvWorkerSummary.setText("לא קיימת משמרת רשומה");
 
                         btnGoToManageWorkers.setText("צור משמרת חדשה");
-                        // שינוי צבע לכפתור (כחול/ברירת מחדל ליצירה)
-                        btnGoToManageWorkers.setBackgroundColor(0xFF2196F3);
+                        btnGoToManageWorkers.setBackgroundColor(0xFF2196F3); // כחול
                     }
                 });
             }
@@ -93,8 +123,7 @@ public class AddShift extends AppCompatActivity {
             @Override
             public void onFailed(Exception e) {
                 runOnUiThread(() -> {
-                    tvSelectedDate.setText("שגיאה בבדיקת הנתונים");
-                    Toast.makeText(AddShift.this, "שגיאה: " + e.getMessage(), Toast.LENGTH_SHORT).show();
+                    tvSelectedDate.setText("שגיאה בטעינה");
                 });
             }
         });
@@ -103,7 +132,6 @@ public class AddShift extends AppCompatActivity {
     @Override
     protected void onResume() {
         super.onResume();
-        // רענון במידה וחוזרים ממסך העריכה
         if (selectedDay != null) {
             checkForExistingShift(selectedDay);
         }

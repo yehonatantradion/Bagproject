@@ -6,12 +6,16 @@ import androidx.annotation.Nullable;
 import com.example.myapplication.model.Worker;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.database.DataSnapshot;
-import com.google.firebase.database.DatabaseError;
 import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
 import org.jetbrains.annotations.NotNull;
+import java.text.ParseException;
+import java.text.SimpleDateFormat;
 import java.util.ArrayList;
+import java.util.Calendar;
+import java.util.Date;
 import java.util.List;
+import java.util.Locale;
 import java.util.Objects;
 
 public class DatabaseService {
@@ -100,8 +104,6 @@ public class DatabaseService {
         });
     }
 
-    // --- התיקון הגדול כאן ---
-    // במקום להשתמש ב-orderByChild (שדורש אינדקס ב-Firebase), אנחנו מושכים הכל ומסננים בקוד.
     public void getShiftByDate(@NotNull final String dateStr, @NotNull final DatabaseCallback<Shift> callback) {
         databaseReference.child(SHIFTS_PATH).get().addOnCompleteListener(task -> {
             if (!task.isSuccessful()) {
@@ -110,17 +112,49 @@ public class DatabaseService {
             }
 
             Shift foundShift = null;
-            // עוברים על כל המשמרות שחזרו
             for (DataSnapshot ds : task.getResult().getChildren()) {
                 Shift shift = ds.getValue(Shift.class);
-                // בדיקה ידנית אם התאריך תואם
                 if (shift != null && Objects.equals(shift.getDayOfWeek0(), dateStr)) {
                     foundShift = shift;
-                    break; // מצאנו! אפשר לעצור
+                    break;
                 }
             }
-            // מחזירים את המשמרת שנמצאה (או null אם לא נמצאה)
             callback.onCompleted(foundShift);
+        });
+    }
+
+    // --- פונקציה חדשה למחיקת משמרות עבר ---
+    public void deletePastShifts() {
+        databaseReference.child(SHIFTS_PATH).get().addOnCompleteListener(task -> {
+            if (!task.isSuccessful()) return;
+
+            SimpleDateFormat sdf = new SimpleDateFormat("dd/MM/yyyy", Locale.getDefault());
+            Date today = new Date();
+
+            // איפוס השעות של "היום" כדי להשוות רק תאריכים
+            Calendar cal = Calendar.getInstance();
+            cal.setTime(today);
+            cal.set(Calendar.HOUR_OF_DAY, 0);
+            cal.set(Calendar.MINUTE, 0);
+            cal.set(Calendar.SECOND, 0);
+            cal.set(Calendar.MILLISECOND, 0);
+            Date todayZeroTime = cal.getTime();
+
+            for (DataSnapshot ds : task.getResult().getChildren()) {
+                Shift shift = ds.getValue(Shift.class);
+                if (shift != null && shift.getDayOfWeek0() != null) {
+                    try {
+                        Date shiftDate = sdf.parse(shift.getDayOfWeek0());
+                        // אם תאריך המשמרת קטן מהיום -> למחוק
+                        if (shiftDate != null && shiftDate.before(todayZeroTime)) {
+                            Log.d(TAG, "Deleting past shift: " + shift.getDayOfWeek0());
+                            ds.getRef().removeValue();
+                        }
+                    } catch (ParseException e) {
+                        e.printStackTrace();
+                    }
+                }
+            }
         });
     }
 }

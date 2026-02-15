@@ -31,12 +31,13 @@
 
     <Space
         android:layout_width="match_parent"
-        android:layout_height="24dp" />
+        android:layout_height="16dp" />
 
     <androidx.cardview.widget.CardView
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:layout_marginHorizontal="16dp"
+        android:layout_weight="1"
         app:cardCornerRadius="12dp"
         app:cardElevation="6dp"
         app:cardBackgroundColor="@android:color/white">
@@ -52,12 +53,23 @@
                 android:id="@+id/tvSelectedDate"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:text="בחר תאריך לבדיקה"
+                android:text="בחר תאריך"
                 android:textSize="18sp"
                 android:textStyle="bold"
                 android:textColor="#333333"
                 android:gravity="center"
-                android:layout_marginBottom="24dp"/>
+                android:layout_marginBottom="8dp"/>
+
+            <TextView
+                android:id="@+id/tvWorkerSummary"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:text=""
+                android:textSize="14sp"
+                android:textColor="#666666"
+                android:gravity="center"
+                android:layout_marginBottom="24dp"
+                android:lineSpacingExtra="4dp"/>
 
             <Button
                 android:id="@+id/btnGoToManageWorkers"
@@ -71,5 +83,14 @@
 
         </LinearLayout>
     </androidx.cardview.widget.CardView>
+
+    <Button
+        android:id="@+id/btnBack"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:text="חזרה לתפריט ראשי"
+        android:layout_margin="16dp"
+        android:backgroundTint="#757575"
+        android:textColor="@android:color/white"/>
 
 </LinearLayout>
