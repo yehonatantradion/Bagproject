@@ -12,6 +12,9 @@
         android:supportsRtl="true"
         android:theme="@style/Theme.MyApplication">
         <activity
+            android:name=".screens.DialogWorkerDetails"
+            android:exported="false" />
+        <activity
             android:name=".screens.ItemSelectedWorker"
             android:exported="false" />
         <activity
