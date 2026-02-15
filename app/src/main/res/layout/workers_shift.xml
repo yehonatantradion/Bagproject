@@ -1,21 +1,17 @@
 <?xml version="1.0" encoding="utf-8"?>
 <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
-    xmlns:app="http://schemas.android.com/apk/res-auto"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     android:orientation="vertical"
     android:padding="16dp"
-    android:background="#F5F5F5"
     android:layoutDirection="rtl">
 
     <TextView
         android:id="@+id/tvSelectedDateDisplay"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:text="ניהול משמרת"
         android:textSize="20sp"
         android:textStyle="bold"
-        android:textColor="#333333"
         android:layout_marginBottom="12dp" />
 
     <androidx.recyclerview.widget.RecyclerView
@@ -28,20 +24,15 @@
         android:id="@+id/tvWorkersShift"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:minHeight="60dp"
+        android:minHeight="50dp"
         android:text="טרם נבחרו עובדים"
         android:padding="8dp"
-        android:background="@android:color/white"
-        android:layout_marginTop="8dp"
-        android:layout_marginBottom="8dp" />
+        android:background="#EEEEEE"
+        android:layout_marginVertical="8dp" />
 
     <Button
         android:id="@+id/btnSaveShift"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:text="שמור משמרת"
-        android:backgroundTint="#4CAF50"
-        android:textColor="@android:color/white"
-        android:textSize="18sp"
-        app:cornerRadius="8dp" />
+        android:text="שמור משמרת" />
 </LinearLayout>
