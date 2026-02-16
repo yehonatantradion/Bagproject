@@ -1,11 +1,18 @@
 package com.example.myapplication.screens;
 
 import android.os.Bundle;
+import android.view.LayoutInflater;
 import android.view.View;
+import android.widget.Button;
+import android.widget.EditText;
 import android.widget.ProgressBar;
+import android.widget.RadioButton;
+import android.widget.RadioGroup;
 import android.widget.TextView;
+import android.widget.Toast;
 
 import androidx.activity.EdgeToEdge;
+import androidx.appcompat.app.AlertDialog;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.core.graphics.Insets;
 import androidx.core.view.ViewCompat;
@@ -23,21 +30,13 @@ import java.util.List;
 
 public class UsersList extends AppCompatActivity {
 
-    private static final String TAG = "UsersList";
-
     private RecyclerView rvUsers;
     private ProgressBar progressBar;
     private TextView tvEmpty;
 
     private final ArrayList<Worker> workerArrayList = new ArrayList<>();
     private UsersAdapter adapter;
-
-    // תנסה את כל הנתיבים האלו אחד אחד עד שמוצא נתונים
-
-
-
-    DatabaseService  databaseService;
-    private int pathIndex = 0;
+    private DatabaseService databaseService;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -51,49 +50,140 @@ public class UsersList extends AppCompatActivity {
             return insets;
         });
 
-        databaseService=DatabaseService.getInstance();
+        // RTL
+        getWindow().getDecorView().setLayoutDirection(View.LAYOUT_DIRECTION_RTL);
+
+        databaseService = DatabaseService.getInstance();
 
         rvUsers = findViewById(R.id.rvUsers);
         progressBar = findViewById(R.id.progressBar);
         tvEmpty = findViewById(R.id.tvEmpty);
 
-        adapter = new UsersAdapter(workerArrayList);
+        // הגדרת האדפטר:
+        adapter = new UsersAdapter(workerArrayList, false, new UsersAdapter.OnUserClickListener() {
+            @Override
+            public void onWorkerLongClick(Worker worker) {
+                // פתיחת הדיאלוג המעוצב החדש
+                showEditDialog(worker);
+            }
+
+            @Override
+            public void onAddToShiftClick(Worker worker) {
+                // לא רלוונטי כאן
+            }
+        });
+
         rvUsers.setLayoutManager(new LinearLayoutManager(this));
         rvUsers.setAdapter(adapter);
 
-
-
-        loadFromNextPath();
+        loadWorkers();
     }
 
-    private void loadFromNextPath() {
-       databaseService.getWorkerList(new DatabaseService.DatabaseCallback<List<Worker>>() {
-           @Override
-           public void onCompleted(List<Worker> workers) {
+    private void showEditDialog(Worker worker) {
+        AlertDialog.Builder builder = new AlertDialog.Builder(this);
 
-               workerArrayList.addAll(workers);
+        // טעינת קובץ ה-XML ששלחת (dialog_worker_details.xml)
+        View view = LayoutInflater.from(this).inflate(R.layout.activity_dialog_worker_details, null);
+        builder.setView(view);
 
-               adapter.notifyDataSetChanged();
+        AlertDialog dialog = builder.create();
 
-           }
+        // --- קישור לרכיבים לפי ה-XML החדש ששלחת ---
+        EditText etName = view.findViewById(R.id.etWorkerName);
+        EditText etPhone = view.findViewById(R.id.etWorkerPhone);
+        EditText etEmail = view.findViewById(R.id.etWorkerEmail);
+        RadioGroup rgRole = view.findViewById(R.id.rgRole);
+        RadioButton rbManager = view.findViewById(R.id.rbManager);
+        RadioButton rbWorker = view.findViewById(R.id.rbWorker);
+        Button btnSave = view.findViewById(R.id.btnSaveChanges);
 
-           @Override
-           public void onFailed(Exception e) {
+        // מילוי הנתונים הקיימים
+        etName.setText(worker.getfName());
+        etPhone.setText(worker.getPhone());
+        etEmail.setText(worker.getEmail()); // מוצג אך לא ניתן לעריכה
 
-           }
-       });
+        // הגדרת הבחירה הנוכחית ברדיו באטן (מנהל או עובד)
+        if (worker.getIsAdmin()) {
+            rbManager.setChecked(true);
+        } else {
+            rbWorker.setChecked(true);
+        }
+
+        // האזנה לכפתור השמירה
+        btnSave.setOnClickListener(v -> {
+            String newName = etName.getText().toString().trim();
+            String newPhone = etPhone.getText().toString().trim();
+
+            // בדיקה האם נבחר "מנהל"
+            boolean newIsAdmin = rbManager.isChecked();
+
+            if (newName.isEmpty()) {
+                etName.setError("שדה חובה");
+                return;
+            }
+
+            // עדכון האובייקט המקומי
+            worker.setfName(newName);
+            worker.setPhone(newPhone);
+            worker.setIsAdmin(newIsAdmin); // עדכון הרשאת ניהול
+
+            // עדכון במסד הנתונים
+            showLoading(true);
+            databaseService.updateWorker(worker, new DatabaseService.DatabaseCallback<Void>() {
+                @Override
+                public void onCompleted(Void object) {
+                    showLoading(false);
+                    Toast.makeText(UsersList.this, "הפרטים עודכנו בהצלחה", Toast.LENGTH_SHORT).show();
+                    dialog.dismiss(); // סגירת הדיאלוג
+                    adapter.notifyDataSetChanged(); // רענון הרשימה
+                }
+
+                @Override
+                public void onFailed(Exception e) {
+                    showLoading(false);
+                    Toast.makeText(UsersList.this, "שגיאה בעדכון", Toast.LENGTH_SHORT).show();
+                }
+            });
+        });
+
+        // הצגת הדיאלוג עם רקע שקוף (כדי שהפינות העגולות של ה-CardView יראו טוב)
+        if (dialog.getWindow() != null) {
+            dialog.getWindow().setBackgroundDrawableResource(android.R.color.transparent);
+        }
+
+        dialog.show();
     }
 
+    private void loadWorkers() {
+        showLoading(true);
+        databaseService.getWorkerList(new DatabaseService.DatabaseCallback<List<Worker>>() {
+            @Override
+            public void onCompleted(List<Worker> workers) {
+                showLoading(false);
+                workerArrayList.clear();
+                if (workers != null && !workers.isEmpty()) {
+                    workerArrayList.addAll(workers);
+                    showEmpty(false);
+                } else {
+                    showEmpty(true);
+                }
+                adapter.notifyDataSetChanged();
+            }
 
-
-
-
+            @Override
+            public void onFailed(Exception e) {
+                showLoading(false);
+                showEmpty(true);
+            }
+        });
+    }
 
     private void showLoading(boolean show) {
         progressBar.setVisibility(show ? View.VISIBLE : View.GONE);
-        if (show) {
+        if (show && workerArrayList.isEmpty()) {
             rvUsers.setVisibility(View.GONE);
-            tvEmpty.setVisibility(View.GONE);
+        } else {
+            rvUsers.setVisibility(View.VISIBLE);
         }
     }
 
@@ -101,6 +191,4 @@ public class UsersList extends AppCompatActivity {
         tvEmpty.setVisibility(empty ? View.VISIBLE : View.GONE);
         rvUsers.setVisibility(empty ? View.GONE : View.VISIBLE);
     }
-
 }
-

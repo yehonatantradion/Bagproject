@@ -4,8 +4,10 @@
     android:layout_width="match_parent"
     android:layout_height="wrap_content"
     android:layout_marginTop="10dp"
+    android:layout_marginHorizontal="16dp"
     app:cardCornerRadius="16dp"
     app:cardElevation="2dp"
+    app:cardBackgroundColor="@android:color/white"
     app:cardUseCompatPadding="true">
 
     <RelativeLayout
@@ -14,12 +16,26 @@
         android:padding="16dp"
         android:layoutDirection="rtl">
 
+        <Button
+            android:id="@+id/btnAddToShift"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_alignParentEnd="true"
+            android:layout_centerVertical="true"
+            android:backgroundTint="#2ECC71"
+            android:text="הוספה"
+            android:textColor="@android:color/white"
+            android:textStyle="bold"
+            android:minHeight="40dp"
+            android:paddingHorizontal="12dp" />
+
         <LinearLayout
             android:id="@+id/textContainer"
-            android:layout_width="wrap_content"
+            android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:layout_alignParentStart="true"
             android:layout_toStartOf="@id/btnAddToShift"
+            android:layout_marginEnd="8dp"
             android:orientation="vertical">
 
             <TextView
@@ -49,18 +65,17 @@
                 android:textColor="#374151"
                 android:textSize="14sp" />
 
-        </LinearLayout>
+            <TextView
+                android:id="@+id/tvRole"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="4dp"
+                android:text="תפקיד: עובד"
+                android:textColor="#4A80F0"
+                android:textStyle="bold"
+                android:textSize="12sp" />
 
-        <Button
-            android:id="@+id/btnAddToShift"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_alignParentEnd="true"
-            android:layout_centerVertical="true"
-            android:backgroundTint="#2ECC71"
-            android:text="הוספה"
-            android:textColor="@android:color/white"
-            android:textStyle="bold" />
+        </LinearLayout>
 
     </RelativeLayout>
 
