@@ -57,6 +57,22 @@
                 android:gravity="center"
                 android:layout_marginBottom="24dp" />
 
+            <!-- Locked shift pill (shown when opened from ManageShiftsActivity) -->
+            <TextView
+                android:id="@+id/tvLockedShift"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:text=""
+                android:textSize="15sp"
+                android:fontFamily="sans-serif-medium"
+                android:textColor="@color/primary"
+                android:background="@color/primary_light"
+                android:paddingHorizontal="16dp"
+                android:paddingVertical="10dp"
+                android:gravity="center"
+                android:layout_marginBottom="20dp"
+                android:visibility="gone" />
+
             <!-- בחירת תאריך -->
             <Button
                 android:id="@+id/btnPickDate"
@@ -80,65 +96,72 @@
                 android:gravity="center"
                 android:layout_marginBottom="20dp" />
 
-            <!-- סוג משמרת -->
-            <TextView
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:text="סוג משמרת"
-                android:textSize="14sp"
-                android:textStyle="bold"
-                android:textColor="#444444"
-                android:gravity="end"
-                android:layout_marginBottom="10dp" />
-
+            <!-- סוג משמרת — wrapped so it can be hidden when shift is pre-selected -->
             <LinearLayout
+                android:id="@+id/layoutShiftTypePicker"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:orientation="horizontal"
-                android:layout_marginBottom="20dp">
+                android:orientation="vertical">
+
+                <TextView
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:text="סוג משמרת"
+                    android:textSize="14sp"
+                    android:textStyle="bold"
+                    android:textColor="#444444"
+                    android:gravity="end"
+                    android:layout_marginBottom="10dp" />
 
                 <LinearLayout
-                    android:id="@+id/cardMorning"
-                    android:layout_width="0dp"
-                    android:layout_height="84dp"
-                    android:layout_weight="1"
-                    android:layout_marginEnd="8dp"
-                    android:orientation="vertical"
-                    android:gravity="center"
-                    android:background="@drawable/bg_shift_unselected"
-                    android:clickable="true"
-                    android:focusable="true">
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:orientation="horizontal"
+                    android:layout_marginBottom="20dp">
 
-                    <TextView android:layout_width="wrap_content" android:layout_height="wrap_content"
-                        android:text="🌅" android:textSize="24sp" />
-                    <TextView android:layout_width="wrap_content" android:layout_height="wrap_content"
-                        android:text="בוקר" android:textSize="15sp" android:textStyle="bold"
-                        android:textColor="#333333" android:layout_marginTop="3dp" />
-                    <TextView android:layout_width="wrap_content" android:layout_height="wrap_content"
-                        android:text="06:00 – 14:00" android:textSize="11sp" android:textColor="#777777" />
+                    <LinearLayout
+                        android:id="@+id/cardMorning"
+                        android:layout_width="0dp"
+                        android:layout_height="84dp"
+                        android:layout_weight="1"
+                        android:layout_marginEnd="8dp"
+                        android:orientation="vertical"
+                        android:gravity="center"
+                        android:background="@drawable/bg_shift_unselected"
+                        android:clickable="true"
+                        android:focusable="true">
+
+                        <TextView android:layout_width="wrap_content" android:layout_height="wrap_content"
+                            android:text="🌅" android:textSize="24sp" />
+                        <TextView android:layout_width="wrap_content" android:layout_height="wrap_content"
+                            android:text="בוקר" android:textSize="15sp" android:textStyle="bold"
+                            android:textColor="#333333" android:layout_marginTop="3dp" />
+                        <TextView android:layout_width="wrap_content" android:layout_height="wrap_content"
+                            android:text="06:00 – 14:00" android:textSize="11sp" android:textColor="#777777" />
+                    </LinearLayout>
+
+                    <LinearLayout
+                        android:id="@+id/cardEvening"
+                        android:layout_width="0dp"
+                        android:layout_height="84dp"
+                        android:layout_weight="1"
+                        android:layout_marginStart="8dp"
+                        android:orientation="vertical"
+                        android:gravity="center"
+                        android:background="@drawable/bg_shift_unselected"
+                        android:clickable="true"
+                        android:focusable="true">
+
+                        <TextView android:layout_width="wrap_content" android:layout_height="wrap_content"
+                            android:text="🌙" android:textSize="24sp" />
+                        <TextView android:layout_width="wrap_content" android:layout_height="wrap_content"
+                            android:text="ערב" android:textSize="15sp" android:textStyle="bold"
+                            android:textColor="#333333" android:layout_marginTop="3dp" />
+                        <TextView android:layout_width="wrap_content" android:layout_height="wrap_content"
+                            android:text="14:00 – 22:00" android:textSize="11sp" android:textColor="#777777" />
+                    </LinearLayout>
+
                 </LinearLayout>
-
-                <LinearLayout
-                    android:id="@+id/cardEvening"
-                    android:layout_width="0dp"
-                    android:layout_height="84dp"
-                    android:layout_weight="1"
-                    android:layout_marginStart="8dp"
-                    android:orientation="vertical"
-                    android:gravity="center"
-                    android:background="@drawable/bg_shift_unselected"
-                    android:clickable="true"
-                    android:focusable="true">
-
-                    <TextView android:layout_width="wrap_content" android:layout_height="wrap_content"
-                        android:text="🌙" android:textSize="24sp" />
-                    <TextView android:layout_width="wrap_content" android:layout_height="wrap_content"
-                        android:text="ערב" android:textSize="15sp" android:textStyle="bold"
-                        android:textColor="#333333" android:layout_marginTop="3dp" />
-                    <TextView android:layout_width="wrap_content" android:layout_height="wrap_content"
-                        android:text="14:00 – 22:00" android:textSize="11sp" android:textColor="#777777" />
-                </LinearLayout>
-
             </LinearLayout>
 
             <!-- בחירת עובדים -->
@@ -174,9 +197,42 @@
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:nestedScrollingEnabled="false"
-                android:layout_marginBottom="16dp"
                 android:background="#FFFFFF"
                 android:elevation="2dp" />
+
+            <!-- בחר / בטל הכל -->
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:orientation="horizontal"
+                android:layout_marginTop="8dp"
+                android:layout_marginBottom="16dp">
+
+                <Button
+                    android:id="@+id/btnSelectAll"
+                    android:layout_width="0dp"
+                    android:layout_height="40dp"
+                    android:layout_weight="1"
+                    android:layout_marginEnd="6dp"
+                    android:text="בחר הכל"
+                    android:textAllCaps="false"
+                    android:textSize="13sp"
+                    android:textColor="@color/primary"
+                    android:backgroundTint="@color/primary_light" />
+
+                <Button
+                    android:id="@+id/btnDeselectAll"
+                    android:layout_width="0dp"
+                    android:layout_height="40dp"
+                    android:layout_weight="1"
+                    android:layout_marginStart="6dp"
+                    android:text="בטל הכל"
+                    android:textAllCaps="false"
+                    android:textSize="13sp"
+                    android:textColor="@color/neutral"
+                    android:backgroundTint="@color/neutral_light" />
+
+            </LinearLayout>
 
             <!-- כפתור שליחה -->
             <Button

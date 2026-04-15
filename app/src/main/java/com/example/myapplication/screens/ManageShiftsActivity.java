@@ -41,7 +41,7 @@ public class ManageShiftsActivity extends BaseActivity {
     private TextView tvSelectedDateDisplay, tvEmptyMessage;
     private RecyclerView rvEmployeesList;
     private RecyclerView rvSelectedWorkers;
-    private Button btnSave, btnBack;
+    private Button btnSave, btnBack, btnInviteToShift;
     private DatabaseService databaseService;
 
     private final List<Worker> availableWorkers = new ArrayList<>();
@@ -79,6 +79,7 @@ public class ManageShiftsActivity extends BaseActivity {
         tvEmptyMessage        = findViewById(R.id.tvEmptyMessage);
         btnSave               = findViewById(R.id.btnSaveShift);
         btnBack               = findViewById(R.id.btnBack);
+        btnInviteToShift      = findViewById(R.id.btnInviteToShift);
 
         rvEmployeesList.setLayoutManager(new LinearLayoutManager(this));
         rvSelectedWorkers.setLayoutManager(new LinearLayoutManager(this));
@@ -103,6 +104,14 @@ public class ManageShiftsActivity extends BaseActivity {
 
         btnSave.setOnClickListener(v -> saveShift());
         btnBack.setOnClickListener(v -> finish());
+
+        // Invite button — opens InviteWorkersActivity pre-filled with this shift's date + type
+        btnInviteToShift.setOnClickListener(v -> {
+            Intent inviteIntent = new Intent(this, InviteWorkersActivity.class);
+            inviteIntent.putExtra(InviteWorkersActivity.EXTRA_DATE, dateFromIntent);
+            inviteIntent.putExtra(InviteWorkersActivity.EXTRA_SHIFT_TYPE, shiftTypeFromIntent);
+            startActivity(inviteIntent);
+        });
     }
 
     private String formatDateLabel(String raw) {

@@ -34,12 +34,17 @@ import java.util.Set;
 
 public class InviteWorkersActivity extends BaseActivity {
 
+    /** Optional intent extras — when provided the date/type pickers are hidden */
+    public static final String EXTRA_DATE       = "invite_date";
+    public static final String EXTRA_SHIFT_TYPE = "invite_shift_type";
+
     private static final String TYPE_MORNING = "בוקר";
     private static final String TYPE_EVENING = "ערב";
 
-    private Button btnPickDate, btnSendInvite, btnBack;
+    private Button btnPickDate, btnSendInvite, btnBack, btnSelectAll, btnDeselectAll;
     private LinearLayout cardMorning, cardEvening;
-    private TextView tvPickedDate, tvOpenInvitationsTitle, tvWorkerSelectionHint;
+    private TextView tvPickedDate, tvOpenInvitationsTitle, tvWorkerSelectionHint, tvLockedShift;
+    private View layoutShiftTypePicker;   // the LinearLayout wrapping the two type cards
     private RecyclerView rvInvitations, rvWorkerSelect;
     private ProgressBar progressBar, progressWorkers;
 
@@ -75,11 +80,15 @@ public class InviteWorkersActivity extends BaseActivity {
         btnPickDate            = findViewById(R.id.btnPickDate);
         btnSendInvite          = findViewById(R.id.btnSendInvite);
         btnBack                = findViewById(R.id.btnBack);
+        btnSelectAll           = findViewById(R.id.btnSelectAll);
+        btnDeselectAll         = findViewById(R.id.btnDeselectAll);
         cardMorning            = findViewById(R.id.cardMorning);
         cardEvening            = findViewById(R.id.cardEvening);
         tvPickedDate           = findViewById(R.id.tvPickedDate);
         tvOpenInvitationsTitle = findViewById(R.id.tvOpenInvitationsTitle);
         tvWorkerSelectionHint  = findViewById(R.id.tvWorkerSelectionHint);
+        tvLockedShift          = findViewById(R.id.tvLockedShift);
+        layoutShiftTypePicker  = findViewById(R.id.layoutShiftTypePicker);
         rvInvitations          = findViewById(R.id.rvInvitations);
         rvWorkerSelect         = findViewById(R.id.rvWorkerSelect);
         progressBar            = findViewById(R.id.progressBar);
@@ -101,9 +110,53 @@ public class InviteWorkersActivity extends BaseActivity {
         btnSendInvite.setOnClickListener(v -> sendInvitation());
         btnBack.setOnClickListener(v -> finish());
 
+        btnSelectAll.setOnClickListener(v -> {
+            for (Worker w : workerList) {
+                if (w.getId() != null) selectedWorkerIds.add(w.getId());
+            }
+            workerAdapter.notifyDataSetChanged();
+            updateSelectionHint();
+        });
+
+        btnDeselectAll.setOnClickListener(v -> {
+            selectedWorkerIds.clear();
+            workerAdapter.notifyDataSetChanged();
+            updateSelectionHint();
+        });
+
+        // If launched from a specific shift, pre-fill and lock date + type
+        String extraDate = getIntent().getStringExtra(EXTRA_DATE);
+        String extraType = getIntent().getStringExtra(EXTRA_SHIFT_TYPE);
+        if (extraDate != null && extraType != null) {
+            applyLockedShift(extraDate, extraType);
+        }
+
         updateSendButton();
         loadInvitations();
         loadWorkers();
+    }
+
+    // ─── נעילת משמרת מ-intent ──────────────────────────────────────────────────
+    /**
+     * When the invite screen is opened from ManageShiftsActivity, the date and
+     * shift type are already known. Hide the manual pickers and show a pill with
+     * the locked shift info instead.
+     */
+    private void applyLockedShift(String date, String type) {
+        selectedDate      = date;
+        selectedShiftType = type;
+
+        // Hide the manual date picker + type cards
+        btnPickDate.setVisibility(View.GONE);
+        tvPickedDate.setVisibility(View.GONE);
+        if (layoutShiftTypePicker != null) layoutShiftTypePicker.setVisibility(View.GONE);
+
+        // Show locked pill
+        if (tvLockedShift != null) {
+            String label = formatDate(date) + "  —  " + type;
+            tvLockedShift.setText("משמרת: " + label);
+            tvLockedShift.setVisibility(View.VISIBLE);
+        }
     }
 
     // ─── טעינת עובדים ──────────────────────────────────────────────────────────

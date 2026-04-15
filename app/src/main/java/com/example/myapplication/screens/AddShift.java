@@ -18,10 +18,16 @@ import androidx.appcompat.widget.Toolbar;
 
 import com.example.myapplication.R;
 import com.example.myapplication.services.DatabaseService;
+import com.example.myapplication.services.Shift;
 import com.prolificinteractive.materialcalendarview.CalendarDay;
 import com.prolificinteractive.materialcalendarview.MaterialCalendarView;
 
 import java.util.Calendar;
+import java.util.HashMap;
+import java.util.HashSet;
+import java.util.List;
+import java.util.Map;
+import java.util.Set;
 import java.util.TimeZone;
 
 public class AddShift extends BaseActivity {
@@ -86,6 +92,101 @@ public class AddShift extends BaseActivity {
         btnBack.setOnClickListener(v -> finish());
 
         updateSubmitButton();
+        loadCalendarColors();
+    }
+
+    // ─── Calendar color indicators ──────────────────────────────────────────────
+    /**
+     * Fetches all saved shifts from Firebase and decorates calendar days:
+     *  - Yellow circle → at least one shift on that day has ≥ 3 assigned workers
+     *  - Green  circle → BOTH morning AND evening have ≥ 3 assigned workers
+     *
+     * Colors are semi-transparent so the selected-day highlight still shows through.
+     */
+    private void loadCalendarColors() {
+        dbService.getShiftList(new DatabaseService.DatabaseCallback<List<Shift>>() {
+            @Override
+            public void onCompleted(List<Shift> shifts) {
+                if (shifts == null || shifts.isEmpty()) return;
+
+                // date string → {"בוקר": count, "ערב": count}
+                Map<String, Map<String, Integer>> dateTypeCount = new HashMap<>();
+
+                for (Shift shift : shifts) {
+                    String date = shift.getDayOfWeek0();
+                    String type = shift.getShiftType();
+                    if (date == null || type == null) continue;
+
+                    int workers = shift.getWorkerList() != null
+                            ? shift.getWorkerList().size() : 0;
+
+                    dateTypeCount
+                            .computeIfAbsent(date, k -> new HashMap<>())
+                            .merge(type, workers, Integer::sum);
+                }
+
+                Set<CalendarDay> yellowDays = new HashSet<>();
+                Set<CalendarDay> greenDays  = new HashSet<>();
+
+                for (Map.Entry<String, Map<String, Integer>> entry : dateTypeCount.entrySet()) {
+                    CalendarDay day = parseDate(entry.getKey());
+                    if (day == null) continue;
+
+                    Map<String, Integer> counts = entry.getValue();
+                    int morningCount = counts.getOrDefault("בוקר", 0);
+                    int eveningCount = counts.getOrDefault("ערב",  0);
+
+                    boolean morningReady = morningCount >= 3;
+                    boolean eveningReady = eveningCount >= 3;
+
+                    if (morningReady && eveningReady) {
+                        greenDays.add(day);
+                    } else if (morningReady || eveningReady) {
+                        yellowDays.add(day);
+                    }
+                }
+
+                // Remove old color decorators and re-apply
+                calendarView.removeDecorators();
+
+                // Yellow: semi-transparent amber background + dark amber text
+                if (!yellowDays.isEmpty()) {
+                    calendarView.addDecorator(new ColorDayDecorator(
+                            yellowDays,
+                            0xAAFFC107,   // amber fill  (67% opaque)
+                            0xFF6D4C00)); // dark amber text
+                }
+
+                // Green: semi-transparent green background + dark green text
+                if (!greenDays.isEmpty()) {
+                    calendarView.addDecorator(new ColorDayDecorator(
+                            greenDays,
+                            0xAA43A047,   // green fill  (67% opaque)
+                            0xFF1B5E20)); // dark green text
+                }
+            }
+
+            @Override
+            public void onFailed(Exception e) {
+                // Silently ignore — calendar still works without colors
+            }
+        });
+    }
+
+    /**
+     * Parses "dd/MM/yyyy" into a CalendarDay, returns null on failure.
+     */
+    private static CalendarDay parseDate(String dateStr) {
+        try {
+            String[] parts = dateStr.split("/");
+            int day   = Integer.parseInt(parts[0]);
+            int month = Integer.parseInt(parts[1]);
+            int year  = Integer.parseInt(parts[2]);
+            // CalendarDay.from(year, month, day) — month is 1-based here
+            return CalendarDay.from(year, month, day);
+        } catch (Exception e) {
+            return null;
+        }
     }
 
     private void updateDateDisplay() {
@@ -211,5 +312,6 @@ public class AddShift extends BaseActivity {
     protected void onResume() {
         super.onResume();
         refreshAvailableCount();
+        loadCalendarColors();
     }
 }

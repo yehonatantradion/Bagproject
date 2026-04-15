@@ -162,24 +162,6 @@
                         android:paddingHorizontal="16dp"
                         android:backgroundTint="@android:color/transparent" />
 
-                    <View
-                        android:layout_width="match_parent"
-                        android:layout_height="1dp"
-                        android:layout_marginHorizontal="16dp"
-                        android:background="@color/divider" />
-
-                    <Button
-                        android:id="@+id/btnInviteWorkers"
-                        android:layout_width="match_parent"
-                        android:layout_height="52dp"
-                        android:text="הזמנת עובדים למשמרת"
-                        android:textAllCaps="false"
-                        android:textSize="15sp"
-                        android:textColor="@color/text_primary"
-                        android:gravity="center_vertical|start"
-                        android:paddingHorizontal="16dp"
-                        android:backgroundTint="@android:color/transparent" />
-
                 </LinearLayout>
             </com.google.android.material.card.MaterialCardView>
 

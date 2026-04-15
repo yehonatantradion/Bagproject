@@ -25,7 +25,6 @@ public class adminpage extends BaseActivity {
     private Button btnManageWorkers;
     private Button btnManageShifts;
     private Button btnAddShift;
-    private Button btnInviteWorkers;
     private Button btnTodayAttendance;
     private Button btnSettings;
     private Button btnLogout;
@@ -56,7 +55,6 @@ public class adminpage extends BaseActivity {
         btnManageWorkers   = findViewById(R.id.btnManageWorkers);
         btnManageShifts    = findViewById(R.id.btnManageShifts);
         btnAddShift        = findViewById(R.id.btnAddShift);
-        btnInviteWorkers   = findViewById(R.id.btnInviteWorkers);
         btnTodayAttendance = findViewById(R.id.btnTodayAttendance);
         btnSettings        = findViewById(R.id.btnSettings);
         btnLogout          = findViewById(R.id.btnLogout);
@@ -104,10 +102,6 @@ public class adminpage extends BaseActivity {
 
         btnAddShift.setOnClickListener(v ->
                 startActivity(new Intent(this, AddShift.class)));
-
-        // הזמנת עובדים למשמרת
-        btnInviteWorkers.setOnClickListener(v ->
-                startActivity(new Intent(this, InviteWorkersActivity.class)));
 
         btnTodayAttendance.setOnClickListener(v ->
                 startActivity(new Intent(this, TodayAttendanceActivity.class)));

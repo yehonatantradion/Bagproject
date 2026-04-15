@@ -14,7 +14,7 @@
         android:layout_width="0dp"
         android:layout_height="?attr/actionBarSize"
         android:background="@color/primary"
-        app:title="פרטי עובד"
+        app:title="עריכת עובד"
         app:titleTextColor="@color/white"
         app:navigationIcon="?attr/homeAsUpIndicator"
         app:navigationIconTint="@color/white"
@@ -47,7 +47,6 @@
                 android:gravity="center"
                 android:layout_marginBottom="24dp">
 
-                <!-- Initials circle -->
                 <TextView
                     android:id="@+id/tvAvatar"
                     android:layout_width="80dp"
@@ -59,7 +58,6 @@
                     android:background="@drawable/bg_avatar_circle"
                     android:layout_marginBottom="14dp" />
 
-                <!-- Full name -->
                 <TextView
                     android:id="@+id/tvFullName"
                     android:layout_width="wrap_content"
@@ -69,7 +67,6 @@
                     android:textColor="@color/text_primary"
                     android:layout_marginBottom="6dp" />
 
-                <!-- Role badge -->
                 <TextView
                     android:id="@+id/tvRoleBadge"
                     android:layout_width="wrap_content"
@@ -82,7 +79,7 @@
 
             </LinearLayout>
 
-            <!-- Info card -->
+            <!-- Editable fields card -->
             <com.google.android.material.card.MaterialCardView
                 style="@style/AppCard"
                 android:layout_width="match_parent"
@@ -92,147 +89,175 @@
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
                     android:orientation="vertical"
-                    android:paddingVertical="4dp">
+                    android:paddingHorizontal="16dp"
+                    android:paddingTop="16dp"
+                    android:paddingBottom="8dp">
 
-                    <!-- Email row -->
-                    <LinearLayout
+                    <!-- שם פרטי -->
+                    <TextView
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:text="שם פרטי"
+                        android:textSize="11sp"
+                        android:fontFamily="sans-serif-medium"
+                        android:textColor="@color/text_secondary"
+                        android:layout_marginBottom="6dp" />
+
+                    <EditText
+                        android:id="@+id/etFName"
                         android:layout_width="match_parent"
-                        android:layout_height="56dp"
-                        android:orientation="horizontal"
-                        android:gravity="center_vertical"
-                        android:paddingHorizontal="16dp">
+                        android:layout_height="50dp"
+                        android:hint="שם פרטי"
+                        android:inputType="textPersonName"
+                        android:paddingHorizontal="14dp"
+                        android:background="@drawable/bg_input"
+                        android:textSize="14sp"
+                        android:textColor="@color/text_primary"
+                        android:gravity="center_vertical|end"
+                        android:layout_marginBottom="14dp" />
 
-                        <LinearLayout
-                            android:layout_width="0dp"
-                            android:layout_height="wrap_content"
-                            android:layout_weight="1"
-                            android:orientation="vertical">
+                    <!-- שם משפחה -->
+                    <TextView
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:text="שם משפחה"
+                        android:textSize="11sp"
+                        android:fontFamily="sans-serif-medium"
+                        android:textColor="@color/text_secondary"
+                        android:layout_marginBottom="6dp" />
 
-                            <TextView
-                                android:layout_width="wrap_content"
-                                android:layout_height="wrap_content"
-                                android:text="אימייל"
-                                android:textSize="11sp"
-                                android:textColor="@color/text_secondary"
-                                android:fontFamily="sans-serif-medium" />
-
-                            <TextView
-                                android:id="@+id/tvEmail"
-                                android:layout_width="wrap_content"
-                                android:layout_height="wrap_content"
-                                android:textSize="14sp"
-                                android:textColor="@color/text_primary"
-                                android:layout_marginTop="2dp" />
-                        </LinearLayout>
-                    </LinearLayout>
-
-                    <View android:layout_width="match_parent" android:layout_height="1dp"
-                        android:layout_marginHorizontal="16dp" android:background="@color/divider" />
-
-                    <!-- Phone row -->
-                    <LinearLayout
+                    <EditText
+                        android:id="@+id/etLName"
                         android:layout_width="match_parent"
-                        android:layout_height="56dp"
-                        android:orientation="horizontal"
-                        android:gravity="center_vertical"
-                        android:paddingHorizontal="16dp">
+                        android:layout_height="50dp"
+                        android:hint="שם משפחה"
+                        android:inputType="textPersonName"
+                        android:paddingHorizontal="14dp"
+                        android:background="@drawable/bg_input"
+                        android:textSize="14sp"
+                        android:textColor="@color/text_primary"
+                        android:gravity="center_vertical|end"
+                        android:layout_marginBottom="14dp" />
 
-                        <LinearLayout
-                            android:layout_width="0dp"
-                            android:layout_height="wrap_content"
-                            android:layout_weight="1"
-                            android:orientation="vertical">
+                    <!-- טלפון -->
+                    <TextView
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:text="טלפון"
+                        android:textSize="11sp"
+                        android:fontFamily="sans-serif-medium"
+                        android:textColor="@color/text_secondary"
+                        android:layout_marginBottom="6dp" />
 
-                            <TextView
-                                android:layout_width="wrap_content"
-                                android:layout_height="wrap_content"
-                                android:text="טלפון"
-                                android:textSize="11sp"
-                                android:textColor="@color/text_secondary"
-                                android:fontFamily="sans-serif-medium" />
-
-                            <TextView
-                                android:id="@+id/tvPhone"
-                                android:layout_width="wrap_content"
-                                android:layout_height="wrap_content"
-                                android:textSize="14sp"
-                                android:textColor="@color/text_primary"
-                                android:layout_marginTop="2dp" />
-                        </LinearLayout>
-                    </LinearLayout>
-
-                    <View android:layout_width="match_parent" android:layout_height="1dp"
-                        android:layout_marginHorizontal="16dp" android:background="@color/divider" />
-
-                    <!-- Job title row -->
-                    <LinearLayout
+                    <EditText
+                        android:id="@+id/etPhone"
                         android:layout_width="match_parent"
-                        android:layout_height="56dp"
-                        android:orientation="horizontal"
-                        android:gravity="center_vertical"
-                        android:paddingHorizontal="16dp">
+                        android:layout_height="50dp"
+                        android:hint="050-0000000"
+                        android:inputType="phone"
+                        android:paddingHorizontal="14dp"
+                        android:background="@drawable/bg_input"
+                        android:textSize="14sp"
+                        android:textColor="@color/text_primary"
+                        android:gravity="center_vertical|end"
+                        android:layout_marginBottom="14dp" />
 
-                        <LinearLayout
-                            android:layout_width="0dp"
-                            android:layout_height="wrap_content"
-                            android:layout_weight="1"
-                            android:orientation="vertical">
+                    <!-- תפקיד -->
+                    <TextView
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:text="תפקיד"
+                        android:textSize="11sp"
+                        android:fontFamily="sans-serif-medium"
+                        android:textColor="@color/text_secondary"
+                        android:layout_marginBottom="6dp" />
 
-                            <TextView
-                                android:layout_width="wrap_content"
-                                android:layout_height="wrap_content"
-                                android:text="תפקיד"
-                                android:textSize="11sp"
-                                android:textColor="@color/text_secondary"
-                                android:fontFamily="sans-serif-medium" />
-
-                            <TextView
-                                android:id="@+id/tvJobTitle"
-                                android:layout_width="wrap_content"
-                                android:layout_height="wrap_content"
-                                android:textSize="14sp"
-                                android:textColor="@color/text_primary"
-                                android:layout_marginTop="2dp" />
-                        </LinearLayout>
-                    </LinearLayout>
-
-                    <View android:layout_width="match_parent" android:layout_height="1dp"
-                        android:layout_marginHorizontal="16dp" android:background="@color/divider" />
-
-                    <!-- Role row -->
-                    <LinearLayout
+                    <EditText
+                        android:id="@+id/etJobTitle"
                         android:layout_width="match_parent"
-                        android:layout_height="56dp"
+                        android:layout_height="50dp"
+                        android:hint="לדוגמה: מלצר, קופאי"
+                        android:inputType="text"
+                        android:paddingHorizontal="14dp"
+                        android:background="@drawable/bg_input"
+                        android:textSize="14sp"
+                        android:textColor="@color/text_primary"
+                        android:gravity="center_vertical|end"
+                        android:layout_marginBottom="14dp" />
+
+                    <!-- אימייל (קריאה בלבד) -->
+                    <TextView
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:text="אימייל (לא ניתן לשינוי)"
+                        android:textSize="11sp"
+                        android:fontFamily="sans-serif-medium"
+                        android:textColor="@color/text_secondary"
+                        android:layout_marginBottom="6dp" />
+
+                    <EditText
+                        android:id="@+id/etEmail"
+                        android:layout_width="match_parent"
+                        android:layout_height="50dp"
+                        android:paddingHorizontal="14dp"
+                        android:background="@drawable/bg_input"
+                        android:textSize="14sp"
+                        android:textColor="@color/text_hint"
+                        android:gravity="center_vertical|end"
+                        android:enabled="false"
+                        android:layout_marginBottom="14dp" />
+
+                    <!-- הרשאה -->
+                    <TextView
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:text="הרשאה"
+                        android:textSize="11sp"
+                        android:fontFamily="sans-serif-medium"
+                        android:textColor="@color/text_secondary"
+                        android:layout_marginBottom="8dp" />
+
+                    <RadioGroup
+                        android:id="@+id/rgRole"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
                         android:orientation="horizontal"
-                        android:gravity="center_vertical"
-                        android:paddingHorizontal="16dp">
+                        android:layout_marginBottom="16dp">
 
-                        <LinearLayout
-                            android:layout_width="0dp"
+                        <RadioButton
+                            android:id="@+id/rbWorker"
+                            android:layout_width="wrap_content"
                             android:layout_height="wrap_content"
-                            android:layout_weight="1"
-                            android:orientation="vertical">
+                            android:text="עובד רגיל"
+                            android:textColor="@color/text_primary"
+                            android:layout_marginEnd="24dp" />
 
-                            <TextView
-                                android:layout_width="wrap_content"
-                                android:layout_height="wrap_content"
-                                android:text="הרשאה"
-                                android:textSize="11sp"
-                                android:textColor="@color/text_secondary"
-                                android:fontFamily="sans-serif-medium" />
+                        <RadioButton
+                            android:id="@+id/rbAdmin"
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:text="מנהל"
+                            android:textColor="@color/text_primary" />
 
-                            <TextView
-                                android:id="@+id/tvRole"
-                                android:layout_width="wrap_content"
-                                android:layout_height="wrap_content"
-                                android:textSize="14sp"
-                                android:textColor="@color/text_primary"
-                                android:layout_marginTop="2dp" />
-                        </LinearLayout>
-                    </LinearLayout>
+                    </RadioGroup>
 
                 </LinearLayout>
             </com.google.android.material.card.MaterialCardView>
+
+            <!-- Save button -->
+            <com.google.android.material.button.MaterialButton
+                android:id="@+id/btnSave"
+                android:layout_width="match_parent"
+                android:layout_height="50dp"
+                android:text="שמור שינויים"
+                android:textAllCaps="false"
+                android:textSize="15sp"
+                android:textColor="@color/white"
+                android:fontFamily="sans-serif-medium"
+                android:layout_marginTop="4dp"
+                android:layout_marginBottom="12dp"
+                app:backgroundTint="@color/primary"
+                app:cornerRadius="8dp" />
 
             <!-- Delete button -->
             <com.google.android.material.button.MaterialButton
@@ -244,14 +269,10 @@
                 android:textSize="15sp"
                 android:textColor="@color/error"
                 android:fontFamily="sans-serif-medium"
-                android:layout_marginTop="12dp"
                 app:backgroundTint="@android:color/transparent"
                 app:strokeColor="@color/error"
                 app:strokeWidth="1dp"
-                app:cornerRadius="8dp"
-                app:icon="@android:drawable/ic_menu_delete"
-                app:iconTint="@color/error"
-                app:iconGravity="textStart" />
+                app:cornerRadius="8dp" />
 
         </LinearLayout>
     </ScrollView>
