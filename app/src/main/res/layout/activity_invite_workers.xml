@@ -1,0 +1,235 @@
+<?xml version="1.0" encoding="utf-8"?>
+<androidx.constraintlayout.widget.ConstraintLayout
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:id="@+id/main"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:background="#EEF1F8"
+    android:layoutDirection="rtl">
+
+    <androidx.appcompat.widget.Toolbar
+        android:id="@+id/toolbar"
+        android:layout_width="0dp"
+        android:layout_height="?attr/actionBarSize"
+        android:background="#3F51B5"
+        app:title="הזמנת עובדים"
+        app:titleTextColor="@android:color/white"
+        app:navigationIcon="?attr/homeAsUpIndicator"
+        app:navigationIconTint="@android:color/white"
+        app:layout_constraintTop_toTopOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintEnd_toEndOf="parent" />
+
+    <ScrollView
+        android:layout_width="0dp"
+        android:layout_height="0dp"
+        android:fillViewport="true"
+        app:layout_constraintTop_toBottomOf="@id/toolbar"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintEnd_toEndOf="parent">
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:orientation="vertical"
+            android:padding="20dp">
+
+            <Space android:layout_width="match_parent" android:layout_height="28dp" />
+
+            <TextView
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:text="הזמנת עובדים למשמרת"
+                android:textSize="22sp"
+                android:textStyle="bold"
+                android:textColor="#222222"
+                android:gravity="center"
+                android:layout_marginBottom="4dp" />
+
+            <TextView
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:text="בחר תאריך וסוג — העובדים יראו את ההזמנה ויוכלו לבקש"
+                android:textSize="13sp"
+                android:textColor="#888888"
+                android:gravity="center"
+                android:layout_marginBottom="24dp" />
+
+            <!-- בחירת תאריך -->
+            <Button
+                android:id="@+id/btnPickDate"
+                android:layout_width="match_parent"
+                android:layout_height="50dp"
+                android:text="בחר תאריך"
+                android:textAllCaps="false"
+                android:textSize="15sp"
+                android:textColor="#3F51B5"
+                android:backgroundTint="@android:color/white"
+                android:layout_marginBottom="6dp" />
+
+            <TextView
+                android:id="@+id/tvPickedDate"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:text=""
+                android:textSize="14sp"
+                android:textColor="#3F51B5"
+                android:textStyle="bold"
+                android:gravity="center"
+                android:layout_marginBottom="20dp" />
+
+            <!-- סוג משמרת -->
+            <TextView
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:text="סוג משמרת"
+                android:textSize="14sp"
+                android:textStyle="bold"
+                android:textColor="#444444"
+                android:gravity="end"
+                android:layout_marginBottom="10dp" />
+
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:orientation="horizontal"
+                android:layout_marginBottom="20dp">
+
+                <LinearLayout
+                    android:id="@+id/cardMorning"
+                    android:layout_width="0dp"
+                    android:layout_height="84dp"
+                    android:layout_weight="1"
+                    android:layout_marginEnd="8dp"
+                    android:orientation="vertical"
+                    android:gravity="center"
+                    android:background="@drawable/bg_shift_unselected"
+                    android:clickable="true"
+                    android:focusable="true">
+
+                    <TextView android:layout_width="wrap_content" android:layout_height="wrap_content"
+                        android:text="🌅" android:textSize="24sp" />
+                    <TextView android:layout_width="wrap_content" android:layout_height="wrap_content"
+                        android:text="בוקר" android:textSize="15sp" android:textStyle="bold"
+                        android:textColor="#333333" android:layout_marginTop="3dp" />
+                    <TextView android:layout_width="wrap_content" android:layout_height="wrap_content"
+                        android:text="06:00 – 14:00" android:textSize="11sp" android:textColor="#777777" />
+                </LinearLayout>
+
+                <LinearLayout
+                    android:id="@+id/cardEvening"
+                    android:layout_width="0dp"
+                    android:layout_height="84dp"
+                    android:layout_weight="1"
+                    android:layout_marginStart="8dp"
+                    android:orientation="vertical"
+                    android:gravity="center"
+                    android:background="@drawable/bg_shift_unselected"
+                    android:clickable="true"
+                    android:focusable="true">
+
+                    <TextView android:layout_width="wrap_content" android:layout_height="wrap_content"
+                        android:text="🌙" android:textSize="24sp" />
+                    <TextView android:layout_width="wrap_content" android:layout_height="wrap_content"
+                        android:text="ערב" android:textSize="15sp" android:textStyle="bold"
+                        android:textColor="#333333" android:layout_marginTop="3dp" />
+                    <TextView android:layout_width="wrap_content" android:layout_height="wrap_content"
+                        android:text="14:00 – 22:00" android:textSize="11sp" android:textColor="#777777" />
+                </LinearLayout>
+
+            </LinearLayout>
+
+            <!-- בחירת עובדים -->
+            <TextView
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:text="בחר עובדים להזמין"
+                android:textSize="14sp"
+                android:textStyle="bold"
+                android:textColor="#444444"
+                android:gravity="end"
+                android:layout_marginBottom="4dp" />
+
+            <TextView
+                android:id="@+id/tvWorkerSelectionHint"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:text="(לא נבחר = כל העובדים)"
+                android:textSize="12sp"
+                android:textColor="#999999"
+                android:gravity="end"
+                android:layout_marginBottom="6dp" />
+
+            <ProgressBar
+                android:id="@+id/progressWorkers"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_gravity="center"
+                android:visibility="gone" />
+
+            <androidx.recyclerview.widget.RecyclerView
+                android:id="@+id/rvWorkerSelect"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:nestedScrollingEnabled="false"
+                android:layout_marginBottom="16dp"
+                android:background="#FFFFFF"
+                android:elevation="2dp" />
+
+            <!-- כפתור שליחה -->
+            <Button
+                android:id="@+id/btnSendInvite"
+                android:layout_width="match_parent"
+                android:layout_height="52dp"
+                android:text="שלח הזמנה"
+                android:textAllCaps="false"
+                android:textSize="16sp"
+                android:textColor="@android:color/white"
+                android:backgroundTint="#FF9800"
+                android:enabled="false"
+                android:layout_marginBottom="28dp" />
+
+            <!-- הזמנות פתוחות קיימות -->
+            <TextView
+                android:id="@+id/tvOpenInvitationsTitle"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:text="הזמנות פתוחות"
+                android:textSize="15sp"
+                android:textStyle="bold"
+                android:textColor="#333333"
+                android:gravity="end"
+                android:layout_marginBottom="8dp"
+                android:visibility="gone" />
+
+            <ProgressBar
+                android:id="@+id/progressBar"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_gravity="center"
+                android:visibility="gone" />
+
+            <androidx.recyclerview.widget.RecyclerView
+                android:id="@+id/rvInvitations"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:nestedScrollingEnabled="false" />
+
+            <Button
+                android:id="@+id/btnBack"
+                android:layout_width="match_parent"
+                android:layout_height="44dp"
+                android:text="חזרה"
+                android:textAllCaps="false"
+                android:textSize="14sp"
+                android:textColor="#888888"
+                android:backgroundTint="@android:color/transparent"
+                android:layout_marginTop="16dp"
+                android:layout_marginBottom="16dp" />
+
+        </LinearLayout>
+    </ScrollView>
+
+</androidx.constraintlayout.widget.ConstraintLayout>

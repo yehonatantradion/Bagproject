@@ -1,0 +1,138 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    android:orientation="vertical"
+    android:padding="24dp"
+    android:background="@color/surface"
+    android:layoutDirection="rtl">
+
+    <!-- Title -->
+    <TextView
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="עריכת פרטי עובד"
+        android:textSize="18sp"
+        android:fontFamily="sans-serif-medium"
+        android:textColor="@color/text_primary"
+        android:layout_gravity="center"
+        android:layout_marginBottom="20dp" />
+
+    <!-- שם פרטי -->
+    <TextView
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="שם פרטי"
+        android:textSize="12sp"
+        android:fontFamily="sans-serif-medium"
+        android:textColor="@color/text_secondary"
+        android:layout_marginBottom="6dp" />
+
+    <EditText
+        android:id="@+id/etWorkerName"
+        android:layout_width="match_parent"
+        android:layout_height="50dp"
+        android:hint="שם פרטי"
+        android:inputType="textPersonName"
+        android:paddingHorizontal="14dp"
+        android:background="@drawable/bg_input"
+        android:textSize="14sp"
+        android:textColor="@color/text_primary"
+        android:gravity="center_vertical|end"
+        android:layout_marginBottom="16dp" />
+
+    <!-- טלפון -->
+    <TextView
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="טלפון"
+        android:textSize="12sp"
+        android:fontFamily="sans-serif-medium"
+        android:textColor="@color/text_secondary"
+        android:layout_marginBottom="6dp" />
+
+    <EditText
+        android:id="@+id/etWorkerPhone"
+        android:layout_width="match_parent"
+        android:layout_height="50dp"
+        android:hint="050-0000000"
+        android:inputType="phone"
+        android:paddingHorizontal="14dp"
+        android:background="@drawable/bg_input"
+        android:textSize="14sp"
+        android:textColor="@color/text_primary"
+        android:gravity="center_vertical|end"
+        android:layout_marginBottom="16dp" />
+
+    <!-- אימייל (קריאה בלבד) -->
+    <TextView
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="אימייל (לא ניתן לשינוי)"
+        android:textSize="12sp"
+        android:fontFamily="sans-serif-medium"
+        android:textColor="@color/text_secondary"
+        android:layout_marginBottom="6dp" />
+
+    <EditText
+        android:id="@+id/etWorkerEmail"
+        android:layout_width="match_parent"
+        android:layout_height="50dp"
+        android:paddingHorizontal="14dp"
+        android:background="@drawable/bg_input"
+        android:textSize="14sp"
+        android:textColor="@color/text_hint"
+        android:gravity="center_vertical|end"
+        android:enabled="false"
+        android:layout_marginBottom="16dp" />
+
+    <!-- הרשאה -->
+    <TextView
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="הרשאה"
+        android:textSize="12sp"
+        android:fontFamily="sans-serif-medium"
+        android:textColor="@color/text_secondary"
+        android:layout_marginBottom="8dp" />
+
+    <RadioGroup
+        android:id="@+id/rgRole"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:orientation="horizontal"
+        android:layout_marginBottom="24dp">
+
+        <RadioButton
+            android:id="@+id/rbWorker"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="עובד רגיל"
+            android:textColor="@color/text_primary"
+            android:layout_marginEnd="24dp" />
+
+        <RadioButton
+            android:id="@+id/rbManager"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="מנהל"
+            android:textColor="@color/text_primary" />
+
+    </RadioGroup>
+
+    <!-- Save button -->
+    <com.google.android.material.button.MaterialButton
+        android:id="@+id/btnSaveChanges"
+        android:layout_width="match_parent"
+        android:layout_height="50dp"
+        android:text="שמור שינויים"
+        android:textAllCaps="false"
+        android:textSize="15sp"
+        android:textColor="@color/white"
+        android:fontFamily="sans-serif-medium"
+        app:backgroundTint="@color/primary"
+        app:cornerRadius="8dp"
+        xmlns:app="http://schemas.android.com/apk/res-auto" />
+
+</LinearLayout>
