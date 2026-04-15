@@ -13,12 +13,13 @@ import android.widget.Toast;
 
 import androidx.activity.EdgeToEdge;
 import androidx.appcompat.app.AlertDialog;
-import androidx.appcompat.app.AppCompatActivity;
 import androidx.core.graphics.Insets;
 import androidx.core.view.ViewCompat;
 import androidx.core.view.WindowInsetsCompat;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
+
+import androidx.appcompat.widget.Toolbar;
 
 import com.example.myapplication.R;
 import com.example.myapplication.adapters.UsersAdapter;
@@ -28,7 +29,7 @@ import com.example.myapplication.services.DatabaseService;
 import java.util.ArrayList;
 import java.util.List;
 
-public class UsersList extends AppCompatActivity {
+public class UsersList extends BaseActivity {
 
     private RecyclerView rvUsers;
     private ProgressBar progressBar;
@@ -52,6 +53,10 @@ public class UsersList extends AppCompatActivity {
 
         // RTL
         getWindow().getDecorView().setLayoutDirection(View.LAYOUT_DIRECTION_RTL);
+
+        Toolbar toolbar = findViewById(R.id.toolbar);
+        setSupportActionBar(toolbar);
+        if (getSupportActionBar() != null) getSupportActionBar().setDisplayHomeAsUpEnabled(true);
 
         databaseService = DatabaseService.getInstance();
 
@@ -82,8 +87,8 @@ public class UsersList extends AppCompatActivity {
     private void showEditDialog(Worker worker) {
         AlertDialog.Builder builder = new AlertDialog.Builder(this);
 
-        // טעינת קובץ ה-XML ששלחת (dialog_worker_details.xml)
-        View view = LayoutInflater.from(this).inflate(R.layout.activity_dialog_worker_details, null);
+        // טעינת דיאלוג עריכה (נפרד מ-DialogWorkerDetails שהוא מסך תצוגה בלבד)
+        View view = LayoutInflater.from(this).inflate(R.layout.dialog_edit_worker, null);
         builder.setView(view);
 
         AlertDialog dialog = builder.create();
@@ -190,5 +195,11 @@ public class UsersList extends AppCompatActivity {
     private void showEmpty(boolean empty) {
         tvEmpty.setVisibility(empty ? View.VISIBLE : View.GONE);
         rvUsers.setVisibility(empty ? View.GONE : View.VISIBLE);
+    }
+
+    @Override
+    public boolean onSupportNavigateUp() {
+        finish();
+        return true;
     }
 }

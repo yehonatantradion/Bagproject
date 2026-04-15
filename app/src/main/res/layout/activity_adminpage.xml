@@ -1,188 +1,269 @@
 <?xml version="1.0" encoding="utf-8"?>
-<androidx.constraintlayout.widget.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
+<androidx.constraintlayout.widget.ConstraintLayout
+    xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
     android:id="@+id/main"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:background="#EEF1F8"
+    android:background="@color/background"
+    android:layoutDirection="rtl"
     tools:context=".screens.adminpage">
 
+    <androidx.appcompat.widget.Toolbar
+        android:id="@+id/toolbar"
+        android:layout_width="0dp"
+        android:layout_height="?attr/actionBarSize"
+        android:background="@color/primary"
+        app:title="ניהול מערכת"
+        app:titleTextColor="@color/white"
+        app:layout_constraintTop_toTopOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintEnd_toEndOf="parent" />
+
     <ScrollView
-        android:id="@+id/adminScroll"
         android:layout_width="0dp"
         android:layout_height="0dp"
         android:fillViewport="true"
-        app:layout_constraintTop_toTopOf="parent"
+        app:layout_constraintTop_toBottomOf="@id/toolbar"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintEnd_toEndOf="parent">
 
         <LinearLayout
             android:orientation="vertical"
-            android:padding="24dp"
-            android:gravity="center_horizontal"
             android:layout_width="match_parent"
-            android:layout_height="wrap_content">
+            android:layout_height="wrap_content"
+            android:paddingHorizontal="20dp"
+            android:paddingTop="24dp"
+            android:paddingBottom="32dp">
 
-            <Space
-                android:layout_width="match_parent"
-                android:layout_height="40dp" />
-
-            <ImageView
-                android:id="@+id/logo"
-                android:layout_width="90dp"
-                android:layout_height="90dp"
-                android:layout_marginBottom="16dp"
-                android:src="@drawable/logoapp"
-                android:contentDescription="@string/app_name" />
-
-            <TextView
-                android:id="@+id/tvAdminTitle"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:text="מסך מנהל"
-                android:textSize="24sp"
-                android:textStyle="bold"
-                android:textColor="#222222"
-                android:layout_marginBottom="4dp" />
-
-            <TextView
-                android:id="@+id/tvAdminSubtitle"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:text="ניהול עובדים, משמרות ונוכחות"
-                android:textSize="14sp"
-                android:textColor="#777777"
-                android:layout_marginBottom="24dp" />
-
+            <!-- Header -->
             <LinearLayout
-                android:id="@+id/cardTodayOverview"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:orientation="vertical"
-                android:padding="16dp"
-                android:background="@android:color/white"
-                android:elevation="2dp"
-                android:layout_marginBottom="24dp"
-                android:layout_marginTop="8dp"
-                android:gravity="end">
+                android:orientation="horizontal"
+                android:gravity="center_vertical"
+                android:layout_marginBottom="28dp">
 
-                <TextView
-                    android:id="@+id/tvTodayTitle"
-                    android:layout_width="wrap_content"
+                <LinearLayout
+                    android:layout_width="0dp"
                     android:layout_height="wrap_content"
-                    android:text="סיכום היום"
-                    android:textSize="18sp"
-                    android:textStyle="bold"
-                    android:textColor="#333333"
-                    android:layout_marginBottom="8dp" />
+                    android:layout_weight="1"
+                    android:orientation="vertical">
 
-                <TextView
-                    android:id="@+id/tvTodayDate"
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:text="תאריך: 04/12/2025"
-                    android:textSize="14sp"
-                    android:textColor="#555555"
-                    android:layout_marginBottom="8dp" />
+                    <TextView
+                        android:id="@+id/tvAdminTitle"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:text="שלום, מנהל"
+                        android:textSize="22sp"
+                        android:fontFamily="sans-serif-medium"
+                        android:textColor="@color/text_primary" />
 
-                <TextView
-                    android:id="@+id/tvTodayStats"
-                    android:layout_width="match_parent"
-                    android:layout_height="wrap_content"
-                    android:text="נוכחים כעת: 0\nמאחרים: 0\nלא הגיעו למשמרת: 0"
-                    android:textSize="14sp"
-                    android:textColor="#555555" />
+                    <TextView
+                        android:id="@+id/tvAdminSubtitle"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:text="ניהול עובדים, משמרות ונוכחות"
+                        android:textSize="13sp"
+                        android:textColor="@color/text_secondary"
+                        android:layout_marginTop="2dp" />
+
+                </LinearLayout>
+
+                <ImageView
+                    android:id="@+id/logo"
+                    android:layout_width="96dp"
+                    android:layout_height="96dp"
+                    android:src="@drawable/logoapp"
+                    android:contentDescription="לוגו" />
+
             </LinearLayout>
 
+            <!-- Section: עובדים -->
             <TextView
-                android:id="@+id/tvManageSectionTitle"
+                style="@style/SectionHeader"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:text="ניהול מערכת"
-                android:textSize="16sp"
-                android:textStyle="bold"
-                android:textColor="#333333"
-                android:gravity="end"
-                android:layout_marginBottom="12dp" />
+                android:text="עובדים" />
 
-            <Button
-                android:id="@+id/btnManageWorkers"
+            <com.google.android.material.card.MaterialCardView
+                style="@style/AppCard"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content">
+
+                <LinearLayout
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:orientation="vertical">
+
+                    <Button
+                        android:id="@+id/btnManageWorkers"
+                        android:layout_width="match_parent"
+                        android:layout_height="52dp"
+                        android:text="ניהול עובדים"
+                        android:textAllCaps="false"
+                        android:textSize="15sp"
+                        android:textColor="@color/text_primary"
+                        android:gravity="center_vertical|start"
+                        android:paddingHorizontal="16dp"
+                        android:backgroundTint="@android:color/transparent"
+                        android:drawableStart="@null" />
+
+                </LinearLayout>
+            </com.google.android.material.card.MaterialCardView>
+
+            <!-- Section: משמרות -->
+            <TextView
+                style="@style/SectionHeader"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:text="משמרות"
+                android:layout_marginTop="8dp" />
+
+            <com.google.android.material.card.MaterialCardView
+                style="@style/AppCard"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content">
+
+                <LinearLayout
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:orientation="vertical">
+
+                    <Button
+                        android:id="@+id/btnManageShifts"
+                        android:layout_width="match_parent"
+                        android:layout_height="52dp"
+                        android:text="משמרת נוכחית"
+                        android:textAllCaps="false"
+                        android:textSize="15sp"
+                        android:textColor="@color/text_primary"
+                        android:gravity="center_vertical|start"
+                        android:paddingHorizontal="16dp"
+                        android:backgroundTint="@android:color/transparent" />
+
+                    <View
+                        android:layout_width="match_parent"
+                        android:layout_height="1dp"
+                        android:layout_marginHorizontal="16dp"
+                        android:background="@color/divider" />
+
+                    <Button
+                        android:id="@+id/btnAddShift"
+                        android:layout_width="match_parent"
+                        android:layout_height="52dp"
+                        android:text="הוספת משמרת חדשה"
+                        android:textAllCaps="false"
+                        android:textSize="15sp"
+                        android:textColor="@color/text_primary"
+                        android:gravity="center_vertical|start"
+                        android:paddingHorizontal="16dp"
+                        android:backgroundTint="@android:color/transparent" />
+
+                    <View
+                        android:layout_width="match_parent"
+                        android:layout_height="1dp"
+                        android:layout_marginHorizontal="16dp"
+                        android:background="@color/divider" />
+
+                    <Button
+                        android:id="@+id/btnInviteWorkers"
+                        android:layout_width="match_parent"
+                        android:layout_height="52dp"
+                        android:text="הזמנת עובדים למשמרת"
+                        android:textAllCaps="false"
+                        android:textSize="15sp"
+                        android:textColor="@color/text_primary"
+                        android:gravity="center_vertical|start"
+                        android:paddingHorizontal="16dp"
+                        android:backgroundTint="@android:color/transparent" />
+
+                </LinearLayout>
+            </com.google.android.material.card.MaterialCardView>
+
+            <!-- Section: דוחות -->
+            <TextView
+                style="@style/SectionHeader"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:text="נוכחות"
+                android:layout_marginTop="8dp" />
+
+            <com.google.android.material.card.MaterialCardView
+                style="@style/AppCard"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content">
+
+                <LinearLayout
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:orientation="vertical">
+
+                    <Button
+                        android:id="@+id/btnTodayAttendance"
+                        android:layout_width="match_parent"
+                        android:layout_height="52dp"
+                        android:text="נוכחות היום"
+                        android:textAllCaps="false"
+                        android:textSize="15sp"
+                        android:textColor="@color/text_primary"
+                        android:gravity="center_vertical|start"
+                        android:paddingHorizontal="16dp"
+                        android:backgroundTint="@android:color/transparent" />
+
+                </LinearLayout>
+            </com.google.android.material.card.MaterialCardView>
+
+            <!-- Section: מערכת -->
+            <TextView
+                style="@style/SectionHeader"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:text="מערכת"
+                android:layout_marginTop="8dp" />
+
+            <com.google.android.material.card.MaterialCardView
+                style="@style/AppCard"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content">
+
+                <LinearLayout
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:orientation="vertical">
+
+                    <Button
+                        android:id="@+id/btnSettings"
+                        android:layout_width="match_parent"
+                        android:layout_height="52dp"
+                        android:text="הגדרות מערכת"
+                        android:textAllCaps="false"
+                        android:textSize="15sp"
+                        android:textColor="@color/text_primary"
+                        android:gravity="center_vertical|start"
+                        android:paddingHorizontal="16dp"
+                        android:backgroundTint="@android:color/transparent" />
+
+                </LinearLayout>
+            </com.google.android.material.card.MaterialCardView>
+
+            <!-- Logout -->
+            <com.google.android.material.button.MaterialButton
+                android:id="@+id/btnLogout"
                 android:layout_width="match_parent"
                 android:layout_height="48dp"
-                android:text="ניהול עובדים"
-                android:textAllCaps="false"
-                android:textSize="16sp"
-                android:textColor="@android:color/white"
-                android:backgroundTint="#3F51B5"
-                android:layout_marginBottom="12dp" />
-
-            <Button
-                android:id="@+id/btnUsersList"
-                android:layout_width="match_parent"
-                android:layout_height="48dp"
-                android:text="רשימת משתמשים"
-                android:textAllCaps="false"
-                android:textSize="16sp"
-                android:textColor="@android:color/white"
-                android:backgroundTint="#3F51B5"
-                android:layout_marginBottom="12dp" />
-
-            <Button
-                android:id="@+id/btnManageShifts"
-                android:layout_width="match_parent"
-                android:layout_height="48dp"
-                android:text="ניהול משמרות"
-                android:textAllCaps="false"
-                android:textSize="16sp"
-                android:textColor="@android:color/white"
-                android:backgroundTint="#3F51B5"
-                android:layout_marginBottom="12dp" />
-
-            <Button
-                android:id="@+id/btnAddShift"
-                android:layout_width="match_parent"
-                android:layout_height="48dp"
-                android:text="הוספת משמרת חדשה"
-                android:textAllCaps="false"
-                android:textSize="16sp"
-                android:textColor="@android:color/white"
-                android:backgroundTint="#2ECC71"
-                android:layout_marginBottom="12dp" />
-
-            <Button
-                android:id="@+id/btnTodayAttendance"
-                android:layout_width="match_parent"
-                android:layout_height="48dp"
-                android:text="נוכחות היום"
-                android:textAllCaps="false"
-                android:textSize="16sp"
-                android:textColor="@android:color/white"
-                android:backgroundTint="#3F51B5"
-                android:layout_marginBottom="12dp" />
-
-            <Button
-                android:id="@+id/btnReports"
-                android:layout_width="match_parent"
-                android:layout_height="48dp"
-                android:text="דוחות וסטטיסטיקות"
-                android:textAllCaps="false"
-                android:textSize="16sp"
-                android:textColor="@android:color/white"
-                android:backgroundTint="#3F51B5"
-                android:layout_marginBottom="24dp" />
-
-            <Button
-                android:id="@+id/btnSettings"
-                android:layout_width="match_parent"
-                android:layout_height="44dp"
-                android:text="הגדרות מערכת"
+                android:text="התנתקות"
                 android:textAllCaps="false"
                 android:textSize="14sp"
-                android:textColor="#3F51B5"
-                android:backgroundTint="@android:color/transparent"
-                android:layout_marginBottom="16dp" />
+                android:textColor="@color/error"
+                android:fontFamily="sans-serif-medium"
+                android:layout_marginTop="8dp"
+                app:backgroundTint="@android:color/transparent"
+                app:strokeColor="@color/error"
+                app:strokeWidth="1dp"
+                app:cornerRadius="8dp" />
 
         </LinearLayout>
     </ScrollView>

@@ -1,130 +1,137 @@
 package com.example.myapplication.screens;
 
-import android.content.Context;
 import android.content.Intent;
-import android.content.SharedPreferences;
 import android.os.Bundle;
+import android.text.TextUtils;
 import android.util.Log;
 import android.view.View;
 import android.widget.Button;
 import android.widget.EditText;
+import android.widget.ProgressBar;
 import android.widget.Toast;
 
 import androidx.activity.EdgeToEdge;
-import androidx.appcompat.app.AppCompatActivity;
+import androidx.core.graphics.Insets;
+import androidx.core.view.ViewCompat;
+import androidx.core.view.WindowInsetsCompat;
 
 import com.example.myapplication.R;
 import com.example.myapplication.model.Worker;
 import com.example.myapplication.services.DatabaseService;
 
-public class Register extends AppCompatActivity implements View.OnClickListener {
+public class Register extends BaseActivity {
 
     private static final String TAG = "Register";
 
-    EditText etFname, etLname, etMail, etPhone, etPassword;
-    String fName, lName, email, phone, password;
-    Button btnSubmit, btnGoLogin;
+    private EditText etFname, etLname, etMail, etPhone, etPassword;
+    private Button btnSubmit, btnGoLogin;
+    private ProgressBar progressBar;
 
     private DatabaseService databaseService;
-        boolean isAdmin=false;
-
-    SharedPreferences sharedPreferences;
-    public static final String myPref = "myPref";
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         EdgeToEdge.enable(this);
         setContentView(R.layout.activity_register);
+        getWindow().getDecorView().setLayoutDirection(View.LAYOUT_DIRECTION_RTL);
 
-        sharedPreferences = getSharedPreferences(myPref, Context.MODE_PRIVATE);
+        ViewCompat.setOnApplyWindowInsetsListener(findViewById(R.id.main), (v, insets) -> {
+            Insets systemBars = insets.getInsets(WindowInsetsCompat.Type.systemBars());
+            v.setPadding(systemBars.left, systemBars.top, systemBars.right, systemBars.bottom);
+            return insets;
+        });
 
         databaseService = DatabaseService.getInstance();
 
-
-        etFname = findViewById(R.id.etFname);
-        etLname = findViewById(R.id.etLname);
-        etMail = findViewById(R.id.etEmail);
-        etPhone = findViewById(R.id.etPhone);
+        etFname    = findViewById(R.id.etFname);
+        etLname    = findViewById(R.id.etLname);
+        etMail     = findViewById(R.id.etEmail);
+        etPhone    = findViewById(R.id.etPhone);
         etPassword = findViewById(R.id.etPass);
-        btnSubmit = findViewById(R.id.btnRegister);
+        btnSubmit  = findViewById(R.id.btnRegister);
         btnGoLogin = findViewById(R.id.btnGoLogin);
+        progressBar = findViewById(R.id.progressBar);
 
-        btnSubmit.setOnClickListener(this);
+        btnSubmit.setOnClickListener(v -> attemptRegister());
 
-        // כפתור "כבר יש לך חשבון? התחבר"
-        btnGoLogin.setOnClickListener(view -> {
-            Intent intent = new Intent(Register.this, Login.class);
-            startActivity(intent);
+        btnGoLogin.setOnClickListener(v -> {
+            startActivity(new Intent(Register.this, Login.class));
             finish();
         });
-
-        // ----------------------------
-        // טעינת אימייל + סיסמה שנשמרו
-        // ----------------------------
-       String savedEmail = sharedPreferences.getString("email", "");
-      String savedPass = sharedPreferences.getString("password", "");
-
-        if (!savedEmail.isEmpty()) {
-            etMail.setText(savedEmail);
-        }
-
-        if (!savedPass.isEmpty()) {
-            etPassword.setText(savedPass);
-        }
     }
 
-    @Override
-    public void onClick(View v) {
-        if (v.getId() == btnSubmit.getId()) {
+    private void attemptRegister() {
+        String fName    = etFname.getText().toString().trim();
+        String lName    = etLname.getText().toString().trim();
+        String email    = etMail.getText().toString().trim();
+        String phone    = etPhone.getText().toString().trim();
+        String password = etPassword.getText().toString().trim();
 
-            Log.d(TAG, "onClick: Register button clicked");
-
-            fName = etFname.getText().toString();
-            lName = etLname.getText().toString();
-            email = etMail.getText().toString();
-            phone = etPhone.getText().toString();
-            password = etPassword.getText().toString();
-
-            registerWorker(fName, lName, phone, email, password);
+        // ולידציה
+        if (TextUtils.isEmpty(fName)) {
+            etFname.setError("יש להזין שם פרטי");
+            etFname.requestFocus();
+            return;
         }
-    }
+        if (TextUtils.isEmpty(lName)) {
+            etLname.setError("יש להזין שם משפחה");
+            etLname.requestFocus();
+            return;
+        }
+        if (TextUtils.isEmpty(email)) {
+            etMail.setError("יש להזין אימייל");
+            etMail.requestFocus();
+            return;
+        }
+        if (TextUtils.isEmpty(phone)) {
+            etPhone.setError("יש להזין מספר טלפון");
+            etPhone.requestFocus();
+            return;
+        }
+        if (TextUtils.isEmpty(password) || password.length() < 6) {
+            etPassword.setError("סיסמה חייבת להכיל לפחות 6 תווים");
+            etPassword.requestFocus();
+            return;
+        }
 
-    private void registerWorker(String fname, String lname, String phone, String email, String password) {
-        Log.d(TAG, "registerWorker: Registering worker...");
-        Worker worker = new Worker("uid", fname, lname, phone, email, password, "worker", false);
-        createWorkerInDatabase(worker);
-    }
+        setLoading(true);
 
-    private void createWorkerInDatabase(Worker worker) {
+        // כל משתמש חדש שנרשם הוא עובד רגיל (isAdmin = false)
+        Worker worker = new Worker("", fName, lName, phone, email, password, "עובד", false);
 
         databaseService.createNewWorker(worker, new DatabaseService.DatabaseCallback<String>() {
-
             @Override
-            public void onCompleted(String wid) {
-                Log.d(TAG, "createWorkerInDatabase: Worker created successfully");
+            public void onCompleted(String uid) {
+                Log.d(TAG, "עובד נרשם בהצלחה, uid = " + uid);
+                worker.setId(uid);
+                setLoading(false);
 
-                worker.setId(wid);
+                Toast.makeText(Register.this, "ברוך הבא, " + fName + "!", Toast.LENGTH_SHORT).show();
 
-                // Save credentials
-                SharedPreferences.Editor editor = sharedPreferences.edit();
-                editor.putString("email", email);
-                editor.putString("password", password);
-                editor.putBoolean("isAdmin", worker.isAdmin());
-                editor.apply();
-
-                Log.d(TAG, "createWorkerInDatabase: Redirecting to MainActivity");
-
-                Intent intent = new Intent(Register.this, MainActivity.class);
+                // לאחר הרשמה → מסך עובד ישירות
+                Intent intent = new Intent(Register.this, EmployeeDashboardActivity.class);
+                intent.putExtra("worker", worker);
                 intent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK | Intent.FLAG_ACTIVITY_CLEAR_TASK);
                 startActivity(intent);
             }
 
             @Override
             public void onFailed(Exception e) {
-                Log.e(TAG, "createWorkerInDatabase: Failed to create worker", e);
-                Toast.makeText(Register.this, "Failed to register worker", Toast.LENGTH_SHORT).show();
+                setLoading(false);
+                Log.e(TAG, "שגיאה בהרשמה", e);
+                String msg = e.getMessage() != null && e.getMessage().contains("already in use")
+                        ? "אימייל זה כבר רשום במערכת"
+                        : "שגיאה בהרשמה, נסה שנית";
+                Toast.makeText(Register.this, msg, Toast.LENGTH_LONG).show();
             }
         });
+    }
+
+    private void setLoading(boolean loading) {
+        btnSubmit.setEnabled(!loading);
+        if (progressBar != null) {
+            progressBar.setVisibility(loading ? View.VISIBLE : View.GONE);
+        }
     }
 }

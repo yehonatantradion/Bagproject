@@ -1,5 +1,47 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
-    <color name="black">#FF000000</color>
+    <!-- ── Base ── -->
     <color name="white">#FFFFFFFF</color>
+    <color name="black">#FF000000</color>
+
+    <!-- ── Primary ── -->
+    <color name="primary">#185FA5</color>
+    <color name="primary_light">#E6F1FB</color>
+    <color name="primary_dark">#0F3F70</color>
+
+    <!-- ── Semantic ── -->
+    <color name="success">#1D9E75</color>
+    <color name="success_light">#E6F6F1</color>
+    <color name="error">#E24B4A</color>
+    <color name="error_light">#FDEAEA</color>
+    <color name="warning">#BA7517</color>
+    <color name="warning_light">#FDF3E3</color>
+
+    <!-- ── Neutral ── -->
+    <color name="neutral">#888780</color>
+    <color name="neutral_light">#F0EFED</color>
+
+    <!-- ── Background / Surface ── -->
+    <color name="background">#F8F9FA</color>
+    <color name="surface">#FFFFFF</color>
+    <color name="divider">#E0E0E0</color>
+
+    <!-- ── Text ── -->
+    <color name="text_primary">#1A1A1A</color>
+    <color name="text_secondary">#666666</color>
+    <color name="text_hint">#AAAAAA</color>
+
+    <!-- ── Input ── -->
+    <color name="input_bg">#F5F5F5</color>
+
+    <!-- ── Toolbar ── -->
+    <color name="toolbar_bg">#185FA5</color>
+
+    <!-- ── Theme variants ── -->
+    <color name="theme_green">#1D9E75</color>
+    <color name="theme_green_light">#E6F6F1</color>
+    <color name="theme_purple">#7B4FBE</color>
+    <color name="theme_purple_light">#F0E9FB</color>
+    <color name="theme_red">#C0392B</color>
+    <color name="theme_red_light">#FDEAEA</color>
 </resources>

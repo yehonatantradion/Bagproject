@@ -2,6 +2,14 @@
 <manifest xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:tools="http://schemas.android.com/tools">
 
+    <!-- הרשאות נדרשות -->
+    <uses-permission android:name="android.permission.INTERNET" />
+    <uses-permission android:name="android.permission.ACCESS_FINE_LOCATION" />
+    <uses-permission android:name="android.permission.ACCESS_COARSE_LOCATION" />
+    <uses-permission android:name="android.permission.SCHEDULE_EXACT_ALARM" />
+    <uses-permission android:name="android.permission.POST_NOTIFICATIONS" />
+    <uses-permission android:name="android.permission.VIBRATE" />
+
     <application
         android:allowBackup="true"
         android:dataExtractionRules="@xml/data_extraction_rules"
@@ -11,57 +19,122 @@
         android:roundIcon="@mipmap/ic_launcher_round"
         android:supportsRtl="true"
         android:theme="@style/Theme.MyApplication">
-        <activity
-            android:name=".screens.DialogWorkerDetails"
-            android:exported="false" />
-        <activity
-            android:name=".screens.ItemSelectedWorker"
-            android:exported="false" />
-        <activity
-            android:name=".screens.AddShift"
-            android:exported="false" />
-        <activity
-            android:name=".screens.UsersList"
-            android:exported="false" />
-        <activity
-            android:name=".services.UsersList"
-            android:exported="false" />
-        <activity
-            android:name=".screens.SettingsActivity"
-            android:exported="false" />
-        <activity
-            android:name=".screens.ReportsActivity"
-            android:exported="false" />
-        <activity
-            android:name=".screens.TodayAttendanceActivity"
-            android:exported="false" />
-        <activity
-            android:name=".screens.ManageShiftsActivity"
-            android:exported="false" />
-        <activity
-            android:name=".screens.ManageWorkersActivity"
-            android:exported="false" />
-        <activity
-            android:name=".screens.adminpage"
-            android:exported="false" />
-        <activity
-            android:name=".screens.Login"
-            android:exported="false" /> <!-- מסך ספלאש - המסך הראשון שנטען -->
+
+        <!-- מסך ספלאש - נקודת הכניסה לאפליקציה -->
         <activity
             android:name=".screens.splash"
             android:exported="true">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
-
                 <category android:name="android.intent.category.LAUNCHER" />
             </intent-filter>
-        </activity> <!-- עמוד הבית -->
+        </activity>
+
+        <!-- דף הבית -->
         <activity
             android:name=".screens.MainActivity"
-            android:exported="false" /> <!-- עמוד הרשמה -->
+            android:exported="false" />
+
+        <!-- התחברות -->
+        <activity
+            android:name=".screens.Login"
+            android:exported="false" />
+
+        <!-- הרשמה -->
         <activity
             android:name=".screens.Register"
             android:exported="false" />
+
+        <!-- דף ניהול (מנהל) -->
+        <activity
+            android:name=".screens.adminpage"
+            android:exported="false" />
+
+        <!-- דף עובד רגיל -->
+        <activity
+            android:name=".screens.EmployeeDashboardActivity"
+            android:exported="false" />
+
+        <!-- בקשת משמרת (עובד) -->
+        <activity
+            android:name=".screens.WorkerRequestShift"
+            android:exported="false" />
+
+        <!-- אישור הגעה עם מיקום (עובד) -->
+        <activity
+            android:name=".screens.CheckInActivity"
+            android:exported="false" />
+
+        <!-- בקשות משמרת ממתינות (מנהל) -->
+        <activity
+            android:name=".screens.PendingRequestsActivity"
+            android:exported="false" />
+
+        <!-- נוכחות היום (מנהל) -->
+        <activity
+            android:name=".screens.TodayAttendanceActivity"
+            android:exported="false" />
+
+        <!-- ניהול עובדים -->
+        <activity
+            android:name=".screens.ManageWorkersActivity"
+            android:exported="false" />
+
+        <!-- רשימת משתמשים -->
+        <activity
+            android:name=".screens.UsersList"
+            android:exported="false" />
+
+        <!-- ניהול משמרות -->
+        <activity
+            android:name=".screens.ManageShiftsActivity"
+            android:exported="false" />
+
+        <!-- הוספת משמרת (לוח שנה) -->
+        <activity
+            android:name=".screens.AddShift"
+            android:exported="false" />
+
+        <!-- הזמנת עובדים למשמרת -->
+        <activity
+            android:name=".screens.InviteWorkersActivity"
+            android:exported="false" />
+
+        <!-- משמרת נוכחית (מנהל) -->
+        <activity
+            android:name=".screens.CurrentShiftActivity"
+            android:exported="false" />
+
+        <!-- דוחות -->
+        <activity
+            android:name=".screens.ReportsActivity"
+            android:exported="false" />
+
+        <!-- הגדרות -->
+        <activity
+            android:name=".screens.SettingsActivity"
+            android:exported="false" />
+
+        <!-- דיאלוג פרטי עובד -->
+        <activity
+            android:name=".screens.DialogWorkerDetails"
+            android:exported="false" />
+
+        <!-- פריט עובד נבחר -->
+        <activity
+            android:name=".screens.ItemSelectedWorker"
+            android:exported="false" />
+
+        <!-- מקבל תזכורות משמרת (30 דקות לפני תחילת משמרת) -->
+        <receiver
+            android:name=".services.ShiftReminderReceiver"
+            android:exported="false" />
+
+        <!-- מקבל התראת אי-הגעה למנהל (30 דקות אחרי תחילת משמרת) -->
+        <receiver
+            android:name=".services.NoShowAlertReceiver"
+            android:exported="false" />
+
     </application>
 
 </manifest>

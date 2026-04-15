@@ -2,6 +2,12 @@ package com.example.myapplication.model;
 
 import androidx.annotation.NonNull;
 
+/**
+ * @deprecated שמו שונה ל-{@link ShiftSlot} כדי למנוע בלבול עם
+ * {@link com.example.myapplication.services.Shift}.
+ * השתמש ב-ShiftSlot במקום.
+ */
+@Deprecated
 public class Shift {
     private String date;
     private String type;

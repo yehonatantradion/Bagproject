@@ -12,6 +12,7 @@ public class Shift {
     protected Worker shiftMan;
     protected List <Worker> workerList;
     protected String status;
+    protected String shiftType;
 
     @Override
     public String toString() {
@@ -71,6 +72,14 @@ public class Shift {
 
     public void setStatus(String status) {
         this.status = status;
+    }
+
+    public String getShiftType() {
+        return shiftType;
+    }
+
+    public void setShiftType(String shiftType) {
+        this.shiftType = shiftType;
     }
 
     public Shift() {

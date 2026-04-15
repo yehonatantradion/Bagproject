@@ -46,4 +46,5 @@ dependencies {
     implementation("com.jakewharton.threetenabp:threetenabp:1.4.4")
 
     implementation(libs.recyclerview)
+    implementation("androidx.cardview:cardview:1.0.0")
 }

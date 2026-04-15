@@ -10,11 +10,14 @@ import androidx.recyclerview.widget.RecyclerView;
 import com.example.myapplication.R;
 import com.example.myapplication.model.Worker;
 import java.util.List;
+import java.util.Set;
 
 public class WorkerAdapter extends RecyclerView.Adapter<WorkerAdapter.ViewHolder> {
 
-    private List<Worker> workerList;
-    private OnWorkerClickListener listener;
+    private final List<Worker> workerList;
+    private final OnWorkerClickListener listener;
+    // מזהי עובדים שביקשו את המשמרת — מועבר בהפניה, מתעדכן אוטומטית
+    private Set<String> requestingIds = null;
 
     public interface OnWorkerClickListener {
         void onAddClick(Worker worker, int position);
@@ -22,14 +25,19 @@ public class WorkerAdapter extends RecyclerView.Adapter<WorkerAdapter.ViewHolder
 
     public WorkerAdapter(List<Worker> workerList, OnWorkerClickListener listener) {
         this.workerList = workerList;
-        this.listener = listener;
+        this.listener   = listener;
+    }
+
+    /** העבר את קבוצת המבקשים — ישמש לסימון "ביקש ✓" */
+    public void setRequestingIds(Set<String> requestingIds) {
+        this.requestingIds = requestingIds;
     }
 
     @NonNull
     @Override
     public ViewHolder onCreateViewHolder(@NonNull ViewGroup parent, int viewType) {
-        // שימוש בשם הקובץ שציינת: item_user
-        View view = LayoutInflater.from(parent.getContext()).inflate(R.layout.item_user, parent, false);
+        View view = LayoutInflater.from(parent.getContext())
+                .inflate(R.layout.item_user, parent, false);
         return new ViewHolder(view);
     }
 
@@ -37,13 +45,29 @@ public class WorkerAdapter extends RecyclerView.Adapter<WorkerAdapter.ViewHolder
     public void onBindViewHolder(@NonNull ViewHolder holder, int position) {
         Worker worker = workerList.get(position);
 
-        // הגדרת הטקסט לפי המודל וה-IDs ב-XML
-        holder.tvName.setText(worker.getfName());
-        holder.tvEmail.setText(worker.getEmail());
+        // שם מלא (פרטי + משפחה)
+        String fullName = (worker.getfName() != null ? worker.getfName() : "")
+                + " " + (worker.getlName() != null ? worker.getlName() : "");
+        holder.tvName.setText(fullName.trim());
+        holder.tvEmail.setText(worker.getEmail() != null ? worker.getEmail() : "");
+        holder.tvPhone.setVisibility(View.GONE); // לא רלוונטי במסך זה
+
+        // סמן עובדים שביקשו את המשמרת
+        boolean requested = requestingIds != null
+                && worker.getId() != null
+                && requestingIds.contains(worker.getId());
+        if (requested) {
+            holder.tvRole.setText("ביקש ✓");
+            holder.tvRole.setTextColor(0xFF2ECC71); // ירוק
+            holder.tvRole.setVisibility(View.VISIBLE);
+        } else {
+            holder.tvRole.setText("לא ביקש");
+            holder.tvRole.setTextColor(0xFF9E9E9E); // אפור
+            holder.tvRole.setVisibility(View.VISIBLE);
+        }
 
         holder.btnAdd.setOnClickListener(v -> {
             if (listener != null) {
-                // שליחת העובד והמיקום שלו כדי שנוכל להסיר אותו מהרשימה ב-Activity
                 listener.onAddClick(worker, holder.getAdapterPosition());
             }
         });
@@ -55,15 +79,16 @@ public class WorkerAdapter extends RecyclerView.Adapter<WorkerAdapter.ViewHolder
     }
 
     public static class ViewHolder extends RecyclerView.ViewHolder {
-        TextView tvName, tvEmail;
+        TextView tvName, tvEmail, tvPhone, tvRole;
         Button btnAdd;
 
         public ViewHolder(@NonNull View itemView) {
             super(itemView);
-            // קישור ל-IDs הקיימים ב-item_user.xml
-            tvName = itemView.findViewById(R.id.tvName);
+            tvName  = itemView.findViewById(R.id.tvName);
             tvEmail = itemView.findViewById(R.id.tvEmail);
-            btnAdd = itemView.findViewById(R.id.btnAddToShift);
+            tvPhone = itemView.findViewById(R.id.tvPhone);
+            tvRole  = itemView.findViewById(R.id.tvRole);
+            btnAdd  = itemView.findViewById(R.id.btnAddToShift);
         }
     }
 }

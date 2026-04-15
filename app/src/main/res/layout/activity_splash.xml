@@ -1,88 +1,88 @@
 <?xml version="1.0" encoding="utf-8"?>
-<androidx.constraintlayout.widget.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
+<androidx.constraintlayout.widget.ConstraintLayout
+    xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
     android:id="@+id/main"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:background="#F5F5F5"
+    android:background="@color/primary"
+    android:layoutDirection="rtl"
     tools:context=".screens.splash">
 
-    <!-- לוגו -->
-    <ImageView
-        android:id="@+id/logoImage"
-        android:layout_width="140dp"
-        android:layout_height="140dp"
-        android:src="@drawable/logoapp"
-        android:contentDescription="App Logo"
+    <!-- ── Centered brand block ── -->
+    <LinearLayout
+        android:id="@+id/centerBlock"
+        android:layout_width="0dp"
+        android:layout_height="wrap_content"
+        android:orientation="vertical"
+        android:gravity="center"
         app:layout_constraintTop_toTopOf="parent"
+        app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintEnd_toEndOf="parent"
-        android:layout_marginTop="80dp" />
+        app:layout_constraintEnd_toEndOf="parent">
 
-    <!-- שם האפליקציה -->
-    <TextView
-        android:id="@+id/appTitle"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:text="ShiftCheck"
-        android:textSize="30sp"
-        android:textStyle="bold"
-        android:textColor="#333333"
-        app:layout_constraintTop_toBottomOf="@id/logoImage"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintEnd_toEndOf="parent"
-        android:layout_marginTop="16dp" />
+        <ImageView
+            android:id="@+id/logoImage"
+            android:layout_width="165dp"
+            android:layout_height="165dp"
+            android:src="@drawable/logoapp"
+            android:contentDescription="App Logo"
+            android:layout_marginBottom="20dp" />
 
-    <!-- טקסט משנה -->
-    <TextView
-        android:id="@+id/appSubtitle"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:text="ניהול משמרות ונוכחות בקלות"
-        android:textSize="16sp"
-        android:textColor="#666666"
-        app:layout_constraintTop_toBottomOf="@id/appTitle"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintEnd_toEndOf="parent"
-        android:layout_marginTop="8dp" />
+        <TextView
+            android:id="@+id/appTitle"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="ShiftCheck"
+            android:textSize="30sp"
+            android:fontFamily="sans-serif-medium"
+            android:textColor="@color/white"
+            android:layout_marginBottom="10dp" />
 
-    <!-- עיגול טעינה -->
-    <ProgressBar
-        android:id="@+id/progressBar"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        style="?android:attr/progressBarStyleLarge"
-        android:indeterminate="true"
-        app:layout_constraintTop_toBottomOf="@id/appSubtitle"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintEnd_toEndOf="parent"
-        android:layout_marginTop="32dp" />
+        <TextView
+            android:id="@+id/appSubtitle"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="ניהול משמרות ונוכחות בקלות"
+            android:textSize="14sp"
+            android:textColor="@color/white"
+            android:alpha="0.75"
+            android:gravity="center"
+            android:layout_marginBottom="40dp" />
 
-    <!-- טקסט "מיד מתחילים..." -->
-    <TextView
-        android:id="@+id/startingSoonText"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:text="מיד מתחילים..."
-        android:textSize="16sp"
-        android:textColor="#555555"
-        app:layout_constraintTop_toBottomOf="@id/progressBar"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintEnd_toEndOf="parent"
-        android:layout_marginTop="12dp" />
+        <!-- Loading indicator -->
+        <ProgressBar
+            android:id="@+id/progressBar"
+            android:layout_width="36dp"
+            android:layout_height="36dp"
+            android:indeterminate="true"
+            android:indeterminateTint="@color/white"
+            android:layout_marginBottom="12dp" />
 
-    <!-- זכויות יוצרים בתחתית -->
+        <TextView
+            android:id="@+id/startingSoonText"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="מיד מתחילים..."
+            android:textSize="13sp"
+            android:textColor="@color/white"
+            android:alpha="0.65" />
+
+    </LinearLayout>
+
+    <!-- Footer -->
     <TextView
         android:id="@+id/footerText"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:text="ShiftCheck © כל הזכויות שמורות"
-        android:textSize="14sp"
-        android:textColor="#888888"
+        android:textSize="12sp"
+        android:textColor="@color/white"
+        android:alpha="0.5"
+        android:layout_marginBottom="20dp"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintEnd_toEndOf="parent"
-        android:layout_marginBottom="20dp" />
+        app:layout_constraintEnd_toEndOf="parent" />
 
 </androidx.constraintlayout.widget.ConstraintLayout>

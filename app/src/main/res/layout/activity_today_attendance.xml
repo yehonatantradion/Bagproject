@@ -2,25 +2,189 @@
 <androidx.constraintlayout.widget.ConstraintLayout
     xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
-    xmlns:tools="http://schemas.android.com/tools"
     android:id="@+id/main"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     android:background="#EEF1F8"
-    android:layoutDirection="rtl"
-    tools:context=".screens.TodayAttendanceActivity">
+    android:layoutDirection="rtl">
+
+    <androidx.appcompat.widget.Toolbar
+        android:id="@+id/toolbar"
+        android:layout_width="0dp"
+        android:layout_height="?attr/actionBarSize"
+        android:background="#3F51B5"
+        app:title="נוכחות היום"
+        app:titleTextColor="@android:color/white"
+        app:navigationIcon="?attr/homeAsUpIndicator"
+        app:navigationIconTint="@android:color/white"
+        app:layout_constraintTop_toTopOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintEnd_toEndOf="parent" />
 
     <TextView
-        android:id="@+id/tvTitleTodayAttendance"
-        android:layout_width="wrap_content"
+        android:id="@+id/tvTitle"
+        android:layout_width="0dp"
         android:layout_height="wrap_content"
         android:text="נוכחות היום"
-        android:textSize="24sp"
+        android:textSize="18sp"
         android:textStyle="bold"
         android:textColor="#222222"
-        android:layout_margin="24dp"
-        android:textAlignment="viewEnd"
-        app:layout_constraintTop_toTopOf="parent"
+        android:gravity="center"
+        android:paddingTop="8dp"
+        android:paddingBottom="4dp"
+        app:layout_constraintTop_toBottomOf="@id/toolbar"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintEnd_toEndOf="parent" />
+
+    <TextView
+        android:id="@+id/tvTodayDate"
+        android:layout_width="0dp"
+        android:layout_height="wrap_content"
+        android:text=""
+        android:textSize="14sp"
+        android:textColor="#777777"
+        android:gravity="center"
+        android:paddingBottom="8dp"
+        app:layout_constraintTop_toBottomOf="@id/tvTitle"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintEnd_toEndOf="parent" />
+
+    <!-- סיכום: כמה הגיעו / כמה חסרים -->
+    <LinearLayout
+        android:id="@+id/layoutSummary"
+        android:layout_width="0dp"
+        android:layout_height="wrap_content"
+        android:orientation="horizontal"
+        android:layout_marginHorizontal="16dp"
+        android:layout_marginBottom="8dp"
+        android:padding="12dp"
+        android:background="@android:color/white"
+        android:elevation="2dp"
+        app:layout_constraintTop_toBottomOf="@id/tvTodayDate"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintEnd_toEndOf="parent">
+
+        <LinearLayout
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_weight="1"
+            android:orientation="vertical"
+            android:gravity="center">
+
+            <TextView
+                android:id="@+id/tvArrivedCount"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="0"
+                android:textSize="28sp"
+                android:textStyle="bold"
+                android:textColor="#2ECC71" />
+
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="הגיעו"
+                android:textSize="13sp"
+                android:textColor="#555555" />
+
+        </LinearLayout>
+
+        <View
+            android:layout_width="1dp"
+            android:layout_height="match_parent"
+            android:background="#DDDDDD"
+            android:layout_marginVertical="4dp" />
+
+        <LinearLayout
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_weight="1"
+            android:orientation="vertical"
+            android:gravity="center">
+
+            <TextView
+                android:id="@+id/tvMissingCount"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="0"
+                android:textSize="28sp"
+                android:textStyle="bold"
+                android:textColor="#E53935" />
+
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="לא הגיעו"
+                android:textSize="13sp"
+                android:textColor="#555555" />
+
+        </LinearLayout>
+
+        <View
+            android:layout_width="1dp"
+            android:layout_height="match_parent"
+            android:background="#DDDDDD"
+            android:layout_marginVertical="4dp" />
+
+        <LinearLayout
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_weight="1"
+            android:orientation="vertical"
+            android:gravity="center">
+
+            <TextView
+                android:id="@+id/tvTotalCount"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="0"
+                android:textSize="28sp"
+                android:textStyle="bold"
+                android:textColor="#3F51B5" />
+
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text='סה"כ'
+                android:textSize="13sp"
+                android:textColor="#555555" />
+
+        </LinearLayout>
+
+    </LinearLayout>
+
+    <ProgressBar
+        android:id="@+id/progressBar"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:visibility="gone"
+        app:layout_constraintTop_toBottomOf="@id/layoutSummary"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintEnd_toEndOf="parent" />
+
+    <TextView
+        android:id="@+id/tvNoShifts"
+        android:layout_width="0dp"
+        android:layout_height="wrap_content"
+        android:text="אין משמרות מתוזמנות להיום"
+        android:textSize="15sp"
+        android:textColor="#AAAAAA"
+        android:gravity="center"
+        android:padding="24dp"
+        android:visibility="gone"
+        app:layout_constraintTop_toBottomOf="@id/layoutSummary"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintEnd_toEndOf="parent" />
+
+    <androidx.recyclerview.widget.RecyclerView
+        android:id="@+id/rvAttendance"
+        android:layout_width="0dp"
+        android:layout_height="0dp"
+        android:padding="12dp"
+        android:clipToPadding="false"
+        app:layout_constraintTop_toBottomOf="@id/layoutSummary"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintEnd_toEndOf="parent" />
 
 </androidx.constraintlayout.widget.ConstraintLayout>

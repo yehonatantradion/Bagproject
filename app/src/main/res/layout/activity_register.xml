@@ -1,167 +1,228 @@
 <?xml version="1.0" encoding="utf-8"?>
-<androidx.constraintlayout.widget.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
+<ScrollView
+    xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
+    android:id="@+id/main"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:background="#EEF1F8"
+    android:background="@color/primary"
+    android:fillViewport="true"
+    android:layoutDirection="rtl"
     tools:context=".screens.Register">
 
-    <!-- Scroll שמכיל את כל טופס ההרשמה -->
-    <ScrollView
-        android:id="@+id/registerScroll"
-        android:layout_width="0dp"
-        android:layout_height="0dp"
-        android:fillViewport="true"
-        app:layout_constraintTop_toTopOf="parent"
-        app:layout_constraintBottom_toTopOf="@+id/footer"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintEnd_toEndOf="parent">
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:orientation="vertical"
+        android:gravity="center_horizontal"
+        android:paddingHorizontal="24dp"
+        android:paddingTop="48dp"
+        android:paddingBottom="40dp">
 
+        <!-- Logo -->
+        <ImageView
+            android:id="@+id/logo"
+            android:layout_width="120dp"
+            android:layout_height="120dp"
+            android:src="@drawable/logoapp"
+            android:contentDescription="לוגו"
+            android:layout_marginBottom="10dp" />
+
+        <!-- App name -->
+        <TextView
+            android:id="@+id/appName"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="ShiftCheck"
+            android:textSize="24sp"
+            android:fontFamily="sans-serif-medium"
+            android:textColor="@color/white"
+            android:layout_marginBottom="32dp" />
+
+        <!-- Register card -->
         <LinearLayout
-            android:orientation="vertical"
-            android:padding="24dp"
-            android:gravity="center_horizontal"
             android:layout_width="match_parent"
-            android:layout_height="wrap_content">
+            android:layout_height="wrap_content"
+            android:orientation="vertical"
+            android:padding="28dp"
+            android:background="@drawable/bg_login_card"
+            android:layoutDirection="rtl">
 
-            <!-- מרווח עליון -->
-            <Space
-                android:layout_width="match_parent"
-                android:layout_height="50dp" />
-
-            <!-- לוגו -->
-            <ImageView
-                android:id="@+id/logo"
-                android:layout_width="100dp"
-                android:layout_height="100dp"
-                android:src="@drawable/logoapp"
-                android:layout_marginBottom="12dp" />
-
-            <!-- שם האפליקציה -->
-            <TextView
-                android:id="@+id/appName"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:text="ShiftCheck"
-                android:textColor="#000000"
-                android:textSize="26sp"
-                android:fontFamily="sans-serif-bold"
-                android:gravity="center"
-                android:layout_marginBottom="6dp" />
-
-            <!-- כותרת -->
+            <!-- Title -->
             <TextView
                 android:id="@+id/tvTitle"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:text="הרשמה"
+                android:text="יצירת חשבון"
                 android:textSize="22sp"
-                android:textColor="#4A4A4A"
-                android:fontFamily="sans-serif-bold"
-                android:gravity="center"
+                android:fontFamily="sans-serif-medium"
+                android:textColor="@color/text_primary" />
+
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="מלא את הפרטים כדי להמשיך"
+                android:textSize="13sp"
+                android:textColor="@color/text_secondary"
+                android:layout_marginTop="4dp"
                 android:layout_marginBottom="24dp" />
 
             <!-- שם פרטי -->
-            <com.google.android.material.textfield.TextInputLayout
-                android:layout_width="match_parent"
+            <TextView
+                android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                style="@style/Widget.MaterialComponents.TextInputLayout.OutlinedBox"
-                android:hint="שם פרטי"
-                android:layout_marginBottom="16dp">
+                android:text="שם פרטי"
+                android:textSize="12sp"
+                android:fontFamily="sans-serif-medium"
+                android:textColor="@color/text_secondary"
+                android:layout_marginBottom="6dp" />
 
-                <com.google.android.material.textfield.TextInputEditText
-                    android:id="@+id/etFname"
-                    android:layout_width="match_parent"
-                    android:layout_height="wrap_content"
-                    android:fontFamily="sans-serif-medium"
-                    android:inputType="textPersonName" />
-            </com.google.android.material.textfield.TextInputLayout>
+            <EditText
+                android:id="@+id/etFname"
+                android:layout_width="match_parent"
+                android:layout_height="50dp"
+                android:hint="שם פרטי"
+                android:inputType="textPersonName"
+                android:paddingHorizontal="14dp"
+                android:background="@drawable/bg_input"
+                android:textSize="14sp"
+                android:textColor="@color/text_primary"
+                android:gravity="center_vertical|start"
+                android:layout_marginBottom="16dp" />
 
             <!-- שם משפחה -->
-            <com.google.android.material.textfield.TextInputLayout
-                android:layout_width="match_parent"
+            <TextView
+                android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                style="@style/Widget.MaterialComponents.TextInputLayout.OutlinedBox"
-                android:hint="שם משפפחה"
-                android:layout_marginBottom="16dp">
+                android:text="שם משפחה"
+                android:textSize="12sp"
+                android:fontFamily="sans-serif-medium"
+                android:textColor="@color/text_secondary"
+                android:layout_marginBottom="6dp" />
 
-                <com.google.android.material.textfield.TextInputEditText
-                    android:id="@+id/etLname"
-                    android:layout_width="match_parent"
-                    android:layout_height="wrap_content"
-                    android:fontFamily="sans-serif-medium"
-                    android:inputType="textPersonName" />
-            </com.google.android.material.textfield.TextInputLayout>
+            <EditText
+                android:id="@+id/etLname"
+                android:layout_width="match_parent"
+                android:layout_height="50dp"
+                android:hint="שם משפחה"
+                android:inputType="textPersonName"
+                android:paddingHorizontal="14dp"
+                android:background="@drawable/bg_input"
+                android:textSize="14sp"
+                android:textColor="@color/text_primary"
+                android:gravity="center_vertical|start"
+                android:layout_marginBottom="16dp" />
 
             <!-- טלפון -->
-            <com.google.android.material.textfield.TextInputLayout
-                android:layout_width="match_parent"
+            <TextView
+                android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                style="@style/Widget.MaterialComponents.TextInputLayout.OutlinedBox"
-                android:hint="טלפון"
-                android:layout_marginBottom="16dp">
+                android:text="טלפון"
+                android:textSize="12sp"
+                android:fontFamily="sans-serif-medium"
+                android:textColor="@color/text_secondary"
+                android:layout_marginBottom="6dp" />
 
-                <com.google.android.material.textfield.TextInputEditText
-                    android:id="@+id/etPhone"
-                    android:layout_width="match_parent"
-                    android:layout_height="wrap_content"
-                    android:fontFamily="sans-serif-medium"
-                    android:inputType="phone" />
-            </com.google.android.material.textfield.TextInputLayout>
+            <EditText
+                android:id="@+id/etPhone"
+                android:layout_width="match_parent"
+                android:layout_height="50dp"
+                android:hint="050-0000000"
+                android:inputType="phone"
+                android:paddingHorizontal="14dp"
+                android:background="@drawable/bg_input"
+                android:textSize="14sp"
+                android:textColor="@color/text_primary"
+                android:gravity="center_vertical|start"
+                android:layout_marginBottom="16dp" />
 
             <!-- אימייל -->
-            <com.google.android.material.textfield.TextInputLayout
-                android:layout_width="match_parent"
+            <TextView
+                android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                style="@style/Widget.MaterialComponents.TextInputLayout.OutlinedBox"
-                android:hint="אימייל"
-                android:layout_marginBottom="16dp">
+                android:text="אימייל"
+                android:textSize="12sp"
+                android:fontFamily="sans-serif-medium"
+                android:textColor="@color/text_secondary"
+                android:layout_marginBottom="6dp" />
 
-                <com.google.android.material.textfield.TextInputEditText
-                    android:id="@+id/etEmail"
-                    android:layout_width="match_parent"
-                    android:layout_height="wrap_content"
-                    android:fontFamily="sans-serif-medium"
-                    android:inputType="textEmailAddress" />
-            </com.google.android.material.textfield.TextInputLayout>
+            <EditText
+                android:id="@+id/etEmail"
+                android:layout_width="match_parent"
+                android:layout_height="50dp"
+                android:hint="name@example.com"
+                android:inputType="textEmailAddress"
+                android:paddingHorizontal="14dp"
+                android:background="@drawable/bg_input"
+                android:textSize="14sp"
+                android:textColor="@color/text_primary"
+                android:gravity="center_vertical|start"
+                android:layout_marginBottom="16dp" />
 
             <!-- סיסמה -->
-            <com.google.android.material.textfield.TextInputLayout
-                android:layout_width="match_parent"
+            <TextView
+                android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:hint="סיסמה"
-                style="@style/Widget.MaterialComponents.TextInputLayout.OutlinedBox"
-                app:passwordToggleEnabled="true"
-                android:layout_marginBottom="24dp">
+                android:text="סיסמה"
+                android:textSize="12sp"
+                android:fontFamily="sans-serif-medium"
+                android:textColor="@color/text_secondary"
+                android:layout_marginBottom="6dp" />
 
-                <com.google.android.material.textfield.TextInputEditText
-                    android:id="@+id/etPass"
-                    android:layout_width="match_parent"
-                    android:layout_height="wrap_content"
-                    android:fontFamily="sans-serif-medium"
-                    android:inputType="textPassword" />
-            </com.google.android.material.textfield.TextInputLayout>
+            <EditText
+                android:id="@+id/etPass"
+                android:layout_width="match_parent"
+                android:layout_height="50dp"
+                android:hint="לפחות 6 תווים"
+                android:inputType="textPassword"
+                android:paddingHorizontal="14dp"
+                android:background="@drawable/bg_input"
+                android:textSize="14sp"
+                android:textColor="@color/text_primary"
+                android:gravity="center_vertical|start"
+                android:layout_marginBottom="8dp" />
 
-            <!-- כפתור הרשמה -->
+            <!-- Loading indicator -->
+            <ProgressBar
+                android:id="@+id/progressBar"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_gravity="center"
+                android:indeterminateTint="@color/primary"
+                android:visibility="gone"
+                android:layout_marginVertical="8dp" />
+
+            <!-- Register button -->
             <com.google.android.material.button.MaterialButton
                 android:id="@+id/btnRegister"
                 android:layout_width="match_parent"
-                android:layout_height="56dp"
+                android:layout_height="52dp"
                 android:text="הירשם"
-                android:textColor="@android:color/white"
-                android:textSize="18sp"
-                android:fontFamily="sans-serif-bold"
-                app:cornerRadius="16dp"
-                app:backgroundTint="#4A80F0" />
+                android:textAllCaps="false"
+                android:textSize="16sp"
+                android:textColor="@color/white"
+                android:fontFamily="sans-serif-medium"
+                android:layout_marginTop="16dp"
+                android:layout_marginBottom="20dp"
+                app:backgroundTint="@color/primary"
+                app:cornerRadius="8dp" />
 
-            <!-- שורה: כבר יש לך חשבון? התחבר -->
+            <!-- Login row -->
             <LinearLayout
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:orientation="horizontal"
                 android:gravity="center"
-                android:layout_marginTop="16dp">
+                android:layoutDirection="rtl">
+
+                <TextView
+                    android:id="@+id/tvHaveAccount"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="כבר יש לך חשבון?"
+                    android:textSize="14sp"
+                    android:textColor="@color/text_secondary" />
 
                 <Button
                     android:id="@+id/btnGoLogin"
@@ -171,42 +232,25 @@
                     android:textAllCaps="false"
                     android:textSize="14sp"
                     android:background="@android:color/transparent"
-                    android:paddingLeft="8dp"
-                    android:paddingRight="8dp"
-                    android:textColor="#4A80F0" />
-
-                <TextView
-                    android:id="@+id/tvHaveAccount"
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:text="כבר יש לך חשבון?"
-                    android:textSize="14sp"
-                    android:textColor="#6B7280" />
-
+                    android:textColor="@color/primary"
+                    android:fontFamily="sans-serif-medium"
+                    android:paddingHorizontal="8dp" />
 
             </LinearLayout>
 
-            <!-- מרווח קטן -->
-            <Space
-                android:layout_width="match_parent"
-                android:layout_height="16dp" />
-
         </LinearLayout>
-    </ScrollView>
 
-    <!-- פוטר צמוד לתחתית -->
-    <TextView
-        android:id="@+id/footer"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:text="ShiftCheck © כל הזכויות שמורות"
-        android:textColor="#555555"
-        android:textSize="14sp"
-        android:gravity="center"
-        android:padding="12dp"
-        android:background="#EEF1F8"
-        app:layout_constraintBottom_toBottomOf="parent"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintEnd_toEndOf="parent" />
+        <!-- Footer -->
+        <TextView
+            android:id="@+id/footer"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="ShiftCheck © כל הזכויות שמורות"
+            android:textColor="@color/white"
+            android:textSize="12sp"
+            android:alpha="0.6"
+            android:layout_marginTop="24dp" />
 
-</androidx.constraintlayout.widget.ConstraintLayout>
+    </LinearLayout>
+
+</ScrollView>

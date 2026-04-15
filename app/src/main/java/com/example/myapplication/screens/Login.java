@@ -6,12 +6,13 @@ import android.content.SharedPreferences;
 import android.os.Bundle;
 import android.text.TextUtils;
 import android.util.Log;
+import android.view.View;
 import android.widget.Button;
 import android.widget.EditText;
+import android.widget.ProgressBar;
 import android.widget.Toast;
 
 import androidx.activity.EdgeToEdge;
-import androidx.appcompat.app.AppCompatActivity;
 import androidx.core.graphics.Insets;
 import androidx.core.view.ViewCompat;
 import androidx.core.view.WindowInsetsCompat;
@@ -20,140 +21,128 @@ import com.example.myapplication.R;
 import com.example.myapplication.model.Worker;
 import com.example.myapplication.services.DatabaseService;
 
-public class Login extends AppCompatActivity {
+public class Login extends BaseActivity {
 
     private EditText etEmail, etPassword;
     private Button btnLogin, btnGoRegister;
+    private ProgressBar progressBar;
 
     private SharedPreferences sharedPreferences;
     public static final String myPref = "myPref";
 
-    private String savedEmail;
-    private String savedPassword;
-
     private DatabaseService databaseService;
-    private boolean isAdmin=false;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         EdgeToEdge.enable(this);
         setContentView(R.layout.activity_login);
+        getWindow().getDecorView().setLayoutDirection(View.LAYOUT_DIRECTION_RTL);
 
-        // Edge-to-edge padding
         ViewCompat.setOnApplyWindowInsetsListener(findViewById(R.id.main), (v, insets) -> {
             Insets systemBars = insets.getInsets(WindowInsetsCompat.Type.systemBars());
             v.setPadding(systemBars.left, systemBars.top, systemBars.right, systemBars.bottom);
             return insets;
         });
 
-        // Bind views
-        etEmail = findViewById(R.id.etEmail);
-        etPassword = findViewById(R.id.etPass);
-        btnLogin = findViewById(R.id.btnLogin);
+        etEmail      = findViewById(R.id.etEmail);
+        etPassword   = findViewById(R.id.etPass);
+        btnLogin     = findViewById(R.id.btnLogin);
         btnGoRegister = findViewById(R.id.btnGoRegister);
 
-        // Database service
-        databaseService = DatabaseService.getInstance();
+        // progressBar הוא אופציונלי – אם קיים ב-XML נשתמש בו
+        progressBar  = findViewById(R.id.progressBar);
 
-        // SharedPreferences
+        databaseService   = DatabaseService.getInstance();
         sharedPreferences = getSharedPreferences(myPref, Context.MODE_PRIVATE);
 
-        // Load saved credentials
-        savedEmail = sharedPreferences.getString("email", "");
-        savedPassword = sharedPreferences.getString("password", "");
-        isAdmin= sharedPreferences.getBoolean("isAdmin", false);
+        // מילוי אוטומטי
+        String savedEmail = sharedPreferences.getString("email", "");
+        String savedPass  = sharedPreferences.getString("password", "");
+        if (!savedEmail.isEmpty()) etEmail.setText(savedEmail);
+        if (!savedPass.isEmpty())  etPassword.setText(savedPass);
 
-        // Auto-fill if saved
-        if (!savedEmail.isEmpty()) {
-            etEmail.setText(savedEmail);
+        btnLogin.setOnClickListener(view -> attemptLogin());
+
+        btnGoRegister.setOnClickListener(view ->
+                startActivity(new Intent(Login.this, Register.class)));
+    }
+
+    private void attemptLogin() {
+        String email    = etEmail.getText().toString().trim();
+        String password = etPassword.getText().toString().trim();
+
+        if (TextUtils.isEmpty(email)) {
+            etEmail.setError("יש להזין אימייל");
+            etEmail.requestFocus();
+            return;
         }
-        if (!savedPassword.isEmpty()) {
-            etPassword.setText(savedPassword);
+        if (TextUtils.isEmpty(password)) {
+            etPassword.setError("יש להזין סיסמה");
+            etPassword.requestFocus();
+            return;
         }
 
-        // Login button click
-        btnLogin.setOnClickListener(view -> {
-            String email = etEmail.getText().toString().trim();
-            String password = etPassword.getText().toString().trim();
+        setLoading(true);
 
-            if (TextUtils.isEmpty(email)) {
-                etEmail.setError("Email is required");
-                etEmail.requestFocus();
-                return;
-            }
+        databaseService.LoginWorker(email, password, new DatabaseService.DatabaseCallback<String>() {
+            @Override
+            public void onCompleted(String uid) {
+                Log.d("Login", "התחברות הצליחה, uid = " + uid);
 
-            if (TextUtils.isEmpty(password)) {
-                etPassword.setError("Password is required");
-                etPassword.requestFocus();
-                return;
-            }
+                databaseService.getWorker(uid, new DatabaseService.DatabaseCallback<Worker>() {
+                    @Override
+                    public void onCompleted(Worker worker) {
+                        setLoading(false);
 
-            // *** התחברות דרך Firebase (DatabaseService) ***
-            databaseService.LoginWorker(email, password, new DatabaseService.DatabaseCallback<String>() {
-                @Override
-                public void onCompleted(String uid) {
-                    // לוג למעקב
-                    Log.d("Login", "LoginWorker success, uid = " + uid);
-
-                    // אחרי התחברות – נטען את ה-Worker מה־DB
-                    databaseService.getWorker(uid, new DatabaseService.DatabaseCallback<Worker>() {
-                        @Override
-                        public void onCompleted(Worker worker) {
-                            if (worker == null) {
-                                Toast.makeText(Login.this, "User not found", Toast.LENGTH_SHORT).show();
-                                return;
-                            }
-
-                            // נשמור אימייל+סיסמה לאוטו-פיל
-                            sharedPreferences.edit()
-                                    .putString("email", email)
-                                    .putString("password", password)
-                                    .putBoolean("isAdmin", isAdmin)
-                                    .apply();
-
-                            // בדיקת אדמין – כאן הבעיה שהייתה לך
-                            boolean isAdmin = worker.isAdmin();
-
-                            Log.d("Login", "worker email = " + worker.getEmail());
-                            Log.d("Login", "worker isAdmin from DB = " + isAdmin);
-
-                            // טוסט כדי שתראה בעין מה חוזר:
-                            Toast.makeText(Login.this, "isAdmin = " + isAdmin, Toast.LENGTH_SHORT).show();
-
-                            if (isAdmin) {
-                                // 🟢 אדמין → דף ניהול
-                                // תחליף AdminActivity בשם האקטיביטי של דף הניהול שלך
-                                Intent intent = new Intent(Login.this, adminpage.class);
-                                startActivity(intent);
-                                finish();
-                            } else {
-                                // 🔵 רגיל → דף ראשי
-                                Intent intent = new Intent(Login.this, SettingsActivity.class);
-                                finish();
-                            }
+                        if (worker == null) {
+                            Toast.makeText(Login.this, "משתמש לא נמצא במערכת", Toast.LENGTH_SHORT).show();
+                            return;
                         }
 
-                        @Override
-                        public void onFailed(Exception e) {
-                            Log.e("Login", "Failed to load worker", e);
-                            Toast.makeText(Login.this, "Failed to load user data", Toast.LENGTH_SHORT).show();
+                        // שמירת פרטים
+                        sharedPreferences.edit()
+                                .putString("email", email)
+                                .putString("password", password)
+                                .putBoolean("isAdmin", worker.isAdmin())
+                                .apply();
+
+                        Log.d("Login", "isAdmin = " + worker.isAdmin());
+
+                        if (worker.isAdmin()) {
+                            // מנהל → מסך ניהול
+                            startActivity(new Intent(Login.this, adminpage.class));
+                        } else {
+                            // עובד → מסך עובד
+                            Intent intent = new Intent(Login.this, EmployeeDashboardActivity.class);
+                            intent.putExtra("worker", worker);
+                            startActivity(intent);
                         }
-                    });
-                }
+                        finish();
+                    }
 
-                @Override
-                public void onFailed(Exception e) {
-                    Log.e("Login", "LoginWorker failed", e);
-                    Toast.makeText(Login.this, "Invalid email or password", Toast.LENGTH_SHORT).show();
-                }
-            });
-        });
+                    @Override
+                    public void onFailed(Exception e) {
+                        setLoading(false);
+                        Log.e("Login", "שגיאה בטעינת נתוני עובד", e);
+                        Toast.makeText(Login.this, "שגיאה בטעינת נתוני המשתמש", Toast.LENGTH_SHORT).show();
+                    }
+                });
+            }
 
-        // Register button click
-        btnGoRegister.setOnClickListener(view -> {
-            Intent intent = new Intent(Login.this, Register.class);
-            startActivity(intent);
+            @Override
+            public void onFailed(Exception e) {
+                setLoading(false);
+                Log.e("Login", "שגיאת התחברות", e);
+                Toast.makeText(Login.this, "אימייל או סיסמה שגויים", Toast.LENGTH_SHORT).show();
+            }
         });
+    }
+
+    private void setLoading(boolean loading) {
+        btnLogin.setEnabled(!loading);
+        if (progressBar != null) {
+            progressBar.setVisibility(loading ? View.VISIBLE : View.GONE);
+        }
     }
 }

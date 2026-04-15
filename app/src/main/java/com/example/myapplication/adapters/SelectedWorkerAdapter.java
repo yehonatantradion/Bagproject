@@ -34,7 +34,9 @@ public class SelectedWorkerAdapter extends RecyclerView.Adapter<SelectedWorkerAd
     @Override
     public void onBindViewHolder(@NonNull ViewHolder holder, int position) {
         Worker worker = selectedWorkers.get(position);
-        holder.tvName.setText(worker.getfName()); // וודא שזה getfName או getName לפי המודל שלך
+        String fullName = (worker.getfName() != null ? worker.getfName() : "")
+                + " " + (worker.getlName() != null ? worker.getlName() : "");
+        holder.tvName.setText(fullName.trim());
 
         holder.itemView.setOnClickListener(v -> listener.onItemClick(worker, position));
     }

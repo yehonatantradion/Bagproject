@@ -1,16 +1,18 @@
 package com.example.myapplication.screens;
 
+import android.app.Activity;
 import android.content.Intent;
 import android.os.Bundle;
 import android.view.View;
 
 import androidx.activity.EdgeToEdge;
-import androidx.appcompat.app.AppCompatActivity;
 import androidx.core.graphics.Insets;
 import androidx.core.view.ViewCompat;
 import androidx.core.view.WindowInsetsCompat;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
+
+import androidx.appcompat.widget.Toolbar;
 
 import com.example.myapplication.R;
 import com.example.myapplication.adapters.UsersAdapter;
@@ -20,7 +22,9 @@ import com.example.myapplication.services.DatabaseService;
 import java.util.ArrayList;
 import java.util.List;
 
-public class ManageWorkersActivity extends AppCompatActivity {
+public class ManageWorkersActivity extends BaseActivity {
+
+    private static final int REQUEST_WORKER_DETAILS = 1001;
 
     private RecyclerView rvWorkers;
     private UsersAdapter adapter;
@@ -42,6 +46,10 @@ public class ManageWorkersActivity extends AppCompatActivity {
         // RTL
         getWindow().getDecorView().setLayoutDirection(View.LAYOUT_DIRECTION_RTL);
 
+        Toolbar toolbar = findViewById(R.id.toolbar);
+        setSupportActionBar(toolbar);
+        if (getSupportActionBar() != null) getSupportActionBar().setDisplayHomeAsUpEnabled(true);
+
         rvWorkers = findViewById(R.id.rvWorkers); // וודא שיש לך ID כזה ב-XML, או שתעדכן בהתאם
         // אם ב-XML שלך אין עדיין RecyclerView, תצטרך להוסיף אותו ל-XML של activity_manage_workers
 
@@ -52,12 +60,9 @@ public class ManageWorkersActivity extends AppCompatActivity {
             @Override
             public void onWorkerLongClick(Worker worker) {
                 Intent intent = new Intent(ManageWorkersActivity.this, DialogWorkerDetails.class);
-                intent.putExtra("workerId", worker.getId());
-                intent.putExtra("fname", worker.getfName());
-                intent.putExtra("email", worker.getEmail());
-                intent.putExtra("phone", worker.getPhone());
-                intent.putExtra("isAdmin", worker.getIsAdmin());
-                startActivity(intent);
+                // Pass the entire Worker object (implements Serializable)
+                intent.putExtra(DialogWorkerDetails.EXTRA_WORKER, worker);
+                startActivityForResult(intent, REQUEST_WORKER_DETAILS);
             }
 
             @Override
@@ -86,5 +91,20 @@ public class ManageWorkersActivity extends AppCompatActivity {
                 // טיפול בשגיאה
             }
         });
+    }
+
+    /** Reload list when returning from DialogWorkerDetails after a delete */
+    @Override
+    protected void onActivityResult(int requestCode, int resultCode, Intent data) {
+        super.onActivityResult(requestCode, resultCode, data);
+        if (requestCode == REQUEST_WORKER_DETAILS && resultCode == Activity.RESULT_OK) {
+            loadWorkers();
+        }
+    }
+
+    @Override
+    public boolean onSupportNavigateUp() {
+        finish();
+        return true;
     }
 }

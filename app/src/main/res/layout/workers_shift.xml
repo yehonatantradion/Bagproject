@@ -1,55 +1,141 @@
 <?xml version="1.0" encoding="utf-8"?>
-<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+<LinearLayout
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:id="@+id/main"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     android:orientation="vertical"
-    android:padding="16dp"
+    android:background="@color/background"
     android:layoutDirection="rtl">
 
-    <TextView
-        android:id="@+id/tvSelectedDateDisplay"
+    <androidx.appcompat.widget.Toolbar
+        android:id="@+id/toolbar"
         android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:textSize="20sp"
-        android:textStyle="bold"
-        android:text="ניהול משמרת"
-        android:layout_marginBottom="12dp" />
+        android:layout_height="?attr/actionBarSize"
+        android:background="@color/primary"
+        app:title="ניהול משמרת"
+        app:titleTextColor="@color/white"
+        app:navigationIcon="?attr/homeAsUpIndicator"
+        app:navigationIconTint="@color/white" />
 
-    <TextView
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:text="בחר עובדים להוספה:"
-        android:textSize="14sp"
-        android:textColor="#555555"
-        android:layout_marginBottom="4dp"/>
-
-    <androidx.recyclerview.widget.RecyclerView
-        android:id="@+id/rvEmployeesList"
+    <LinearLayout
         android:layout_width="match_parent"
-        android:layout_height="0dp"
-        android:layout_weight="1"
-        android:background="#F5F5F5"
-        android:layout_marginBottom="12dp"/>
+        android:layout_height="match_parent"
+        android:orientation="vertical"
+        android:paddingHorizontal="16dp"
+        android:paddingTop="16dp"
+        android:paddingBottom="16dp">
 
-    <TextView
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:text="עובדים במשמרת (לחץ להסרה):"
-        android:textSize="14sp"
-        android:textColor="#555555"
-        android:layout_marginBottom="4dp"/>
+        <!-- Shift title pill -->
+        <TextView
+            android:id="@+id/tvSelectedDateDisplay"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="ניהול משמרת"
+            android:textSize="14sp"
+            android:fontFamily="sans-serif-medium"
+            android:textColor="@color/primary"
+            android:background="@color/primary_light"
+            android:paddingHorizontal="14dp"
+            android:paddingVertical="6dp"
+            android:layout_marginBottom="16dp" />
 
-    <androidx.recyclerview.widget.RecyclerView
-        android:id="@+id/rvSelectedWorkers"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:orientation="horizontal"
-        android:minHeight="60dp"
-        android:layout_marginBottom="16dp" />
+        <!-- ── Requesting workers section ── -->
+        <TextView
+            style="@style/SectionHeader"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:text="ביקשו משמרת זו" />
 
-    <Button
-        android:id="@+id/btnSaveShift"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:text="שמור משמרת" />
+        <!-- Empty state -->
+        <TextView
+            android:id="@+id/tvEmptyMessage"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:text="אין עובדים שביקשו משמרת זו עדיין"
+            android:textSize="13sp"
+            android:textColor="@color/warning"
+            android:gravity="center"
+            android:paddingVertical="12dp"
+            android:visibility="gone" />
+
+        <!-- Available workers list -->
+        <com.google.android.material.card.MaterialCardView
+            android:layout_width="match_parent"
+            android:layout_height="0dp"
+            android:layout_weight="1"
+            android:layout_marginBottom="16dp"
+            app:cardBackgroundColor="@color/surface"
+            app:cardCornerRadius="12dp"
+            app:cardElevation="0dp"
+            app:strokeColor="@color/divider"
+            app:strokeWidth="1dp">
+
+            <androidx.recyclerview.widget.RecyclerView
+                android:id="@+id/rvEmployeesList"
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"
+                android:paddingVertical="4dp"
+                android:clipToPadding="false" />
+
+        </com.google.android.material.card.MaterialCardView>
+
+        <!-- ── Assigned workers section ── -->
+        <TextView
+            style="@style/SectionHeader"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:text="עובדים בסידור" />
+
+        <!-- Selected workers list -->
+        <com.google.android.material.card.MaterialCardView
+            android:layout_width="match_parent"
+            android:layout_height="0dp"
+            android:layout_weight="1"
+            android:layout_marginBottom="16dp"
+            app:cardBackgroundColor="@color/surface"
+            app:cardCornerRadius="12dp"
+            app:cardElevation="0dp"
+            app:strokeColor="@color/primary"
+            app:strokeWidth="1dp">
+
+            <androidx.recyclerview.widget.RecyclerView
+                android:id="@+id/rvSelectedWorkers"
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"
+                android:nestedScrollingEnabled="true"
+                android:paddingVertical="4dp"
+                android:clipToPadding="false" />
+
+        </com.google.android.material.card.MaterialCardView>
+
+        <!-- Save button -->
+        <com.google.android.material.button.MaterialButton
+            android:id="@+id/btnSaveShift"
+            android:layout_width="match_parent"
+            android:layout_height="52dp"
+            android:text="שמור משמרת"
+            android:textAllCaps="false"
+            android:textSize="16sp"
+            android:textColor="@color/white"
+            android:fontFamily="sans-serif-medium"
+            android:layout_marginBottom="8dp"
+            app:backgroundTint="@color/primary"
+            app:cornerRadius="8dp" />
+
+        <!-- Back button -->
+        <com.google.android.material.button.MaterialButton
+            android:id="@+id/btnBack"
+            android:layout_width="match_parent"
+            android:layout_height="44dp"
+            android:text="חזרה"
+            android:textAllCaps="false"
+            android:textSize="14sp"
+            android:textColor="@color/neutral"
+            app:backgroundTint="@android:color/transparent"
+            app:cornerRadius="8dp" />
+
+    </LinearLayout>
+
 </LinearLayout>

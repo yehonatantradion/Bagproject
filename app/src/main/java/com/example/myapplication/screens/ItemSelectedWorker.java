@@ -3,14 +3,13 @@ package com.example.myapplication.screens;
 import android.os.Bundle;
 
 import androidx.activity.EdgeToEdge;
-import androidx.appcompat.app.AppCompatActivity;
 import androidx.core.graphics.Insets;
 import androidx.core.view.ViewCompat;
 import androidx.core.view.WindowInsetsCompat;
 
 import com.example.myapplication.R;
 
-public class ItemSelectedWorker extends AppCompatActivity {
+public class ItemSelectedWorker extends BaseActivity {
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {

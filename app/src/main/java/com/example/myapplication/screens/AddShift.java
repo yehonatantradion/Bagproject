@@ -1,139 +1,215 @@
 package com.example.myapplication.screens;
 
 import android.content.Intent;
-import android.graphics.Color;
 import android.os.Bundle;
 import android.view.View;
 import android.widget.Button;
+import android.widget.LinearLayout;
 import android.widget.TextView;
 import android.widget.Toast;
-import androidx.appcompat.app.AppCompatActivity;
+
+import androidx.activity.EdgeToEdge;
+import androidx.core.content.ContextCompat;
+import androidx.core.graphics.Insets;
+import androidx.core.view.ViewCompat;
+import androidx.core.view.WindowInsetsCompat;
+
+import androidx.appcompat.widget.Toolbar;
+
 import com.example.myapplication.R;
-import com.example.myapplication.model.Worker;
 import com.example.myapplication.services.DatabaseService;
-import com.example.myapplication.services.Shift;
 import com.prolificinteractive.materialcalendarview.CalendarDay;
 import com.prolificinteractive.materialcalendarview.MaterialCalendarView;
-import java.util.Date;
 
-public class AddShift extends AppCompatActivity {
+import java.util.Calendar;
+import java.util.TimeZone;
+
+public class AddShift extends BaseActivity {
+
+    private static final String TYPE_MORNING = "בוקר";
+    private static final String TYPE_EVENING = "ערב";
 
     private MaterialCalendarView calendarView;
-    private TextView tvSelectedDate;
-    private TextView tvWorkerSummary;
-    private Button btnGoToManageWorkers;
-    private Button btnBack; // הכפתור החדש
+    private TextView tvSelectedDate, tvAvailableCount;
+    private LinearLayout cardMorning, cardEvening;
+    private Button btnGoToManageWorkers, btnBack;
+
     private CalendarDay selectedDay;
+    private String selectedShiftType = null;
+
     private DatabaseService dbService;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
+        EdgeToEdge.enable(this);
         setContentView(R.layout.activity_add_shift);
+        getWindow().getDecorView().setLayoutDirection(View.LAYOUT_DIRECTION_RTL);
+
+        ViewCompat.setOnApplyWindowInsetsListener(findViewById(R.id.main), (v, insets) -> {
+            Insets systemBars = insets.getInsets(WindowInsetsCompat.Type.systemBars());
+            v.setPadding(systemBars.left, systemBars.top, systemBars.right, systemBars.bottom);
+            return insets;
+        });
+
+        Toolbar toolbar = findViewById(R.id.toolbar);
+        setSupportActionBar(toolbar);
+        if (getSupportActionBar() != null) getSupportActionBar().setDisplayHomeAsUpEnabled(true);
 
         dbService = DatabaseService.getInstance();
-
-        // מחיקת משמרות עבר בכניסה למסך
         dbService.deletePastShifts();
 
-        calendarView = findViewById(R.id.calendarView);
-        tvSelectedDate = findViewById(R.id.tvSelectedDate);
-        tvWorkerSummary = findViewById(R.id.tvWorkerSummary);
-        btnGoToManageWorkers = findViewById(R.id.btnGoToManageWorkers);
-        btnBack = findViewById(R.id.btnBack); // חיבור הכפתור
+        calendarView          = findViewById(R.id.calendarView);
+        tvSelectedDate        = findViewById(R.id.tvSelectedDate);
+        tvAvailableCount      = findViewById(R.id.tvAvailableCount);
+        cardMorning           = findViewById(R.id.cardMorning);
+        cardEvening           = findViewById(R.id.cardEvening);
+        btnGoToManageWorkers  = findViewById(R.id.btnGoToManageWorkers);
+        btnBack               = findViewById(R.id.btnBack);
+
+        // חסום תאריכים עברים בלוח השנה
+        calendarView.state().edit().setMinimumDate(CalendarDay.today()).commit();
 
         selectedDay = CalendarDay.today();
-        checkForExistingShift(selectedDay);
+        updateDateDisplay();
 
         calendarView.setOnDateChangedListener((widget, date, selected) -> {
             selectedDay = date;
-            checkForExistingShift(selectedDay);
+            updateDateDisplay();
+            refreshAvailableCount();
         });
 
-        btnGoToManageWorkers.setOnClickListener(v -> {
-            String dateString = getFormattedDate(selectedDay);
-            Intent intent = new Intent(AddShift.this, ManageShiftsActivity.class);
-            intent.putExtra("SELECTED_DATE", dateString);
-            startActivity(intent);
-        });
+        cardMorning.setOnClickListener(v -> selectType(TYPE_MORNING));
+        cardEvening.setOnClickListener(v -> selectType(TYPE_EVENING));
 
-        // לוגיקה לכפתור חזרה
-        btnBack.setOnClickListener(v -> {
-            finish(); // סוגר את המסך הנוכחי וחוזר למסך הקודם
-        });
+        btnGoToManageWorkers.setOnClickListener(v -> openManageShifts());
+        btnBack.setOnClickListener(v -> finish());
+
+        updateSubmitButton();
     }
 
-    private String getFormattedDate(CalendarDay day) {
-        return String.format("%02d/%02d/%d", day.getDay(), day.getMonth(), day.getYear());
+    private void updateDateDisplay() {
+        if (selectedDay == null) return;
+        String fmt = String.format("%02d/%02d/%d",
+                selectedDay.getDay(), selectedDay.getMonth(), selectedDay.getYear());
+        tvSelectedDate.setText("📅 " + fmt);
     }
 
-    private void checkForExistingShift(CalendarDay day) {
-        String dateToCheck = getFormattedDate(day);
+    private void selectType(String type) {
+        selectedShiftType = type;
+        if (TYPE_MORNING.equals(type)) {
+            cardMorning.setBackground(ContextCompat.getDrawable(this, R.drawable.bg_shift_selected));
+            cardEvening.setBackground(ContextCompat.getDrawable(this, R.drawable.bg_shift_unselected));
+        } else {
+            cardEvening.setBackground(ContextCompat.getDrawable(this, R.drawable.bg_shift_selected));
+            cardMorning.setBackground(ContextCompat.getDrawable(this, R.drawable.bg_shift_unselected));
+        }
+        refreshAvailableCount();
+        updateSubmitButton();
+    }
 
-        // בדיקת תאריך עבר
-        if (day.isBefore(CalendarDay.today())) {
-            tvSelectedDate.setText("⛔ תאריך עבר: " + dateToCheck);
-            tvWorkerSummary.setText("לא ניתן ליצור או לערוך משמרות שהיו בעבר.");
-
-            btnGoToManageWorkers.setText("חסום");
-            btnGoToManageWorkers.setBackgroundColor(Color.GRAY);
-            btnGoToManageWorkers.setEnabled(false);
+    private void refreshAvailableCount() {
+        if (selectedDay == null || selectedShiftType == null) {
+            tvAvailableCount.setText("");
             return;
         }
+        final String dateStr = String.format("%02d/%02d/%d",
+                selectedDay.getDay(), selectedDay.getMonth(), selectedDay.getYear());
+        tvAvailableCount.setText("טוען...");
 
-        btnGoToManageWorkers.setEnabled(true);
-        tvSelectedDate.setText("בודק נתונים...");
-        tvWorkerSummary.setText("");
+        // שלב 1: כמה ביקשו
+        dbService.getShiftRequestsByDateAndType(dateStr, selectedShiftType,
+                new DatabaseService.DatabaseCallback<java.util.List<com.example.myapplication.model.ShiftRequest>>() {
+                    @Override
+                    public void onCompleted(java.util.List<com.example.myapplication.model.ShiftRequest> list) {
+                        final int requestCount = list == null ? 0 : list.size();
 
-        dbService.getShiftByDate(dateToCheck, new DatabaseService.DatabaseCallback<Shift>() {
-            @Override
-            public void onCompleted(Shift shift) {
-                runOnUiThread(() -> {
-                    if (shift != null) {
-                        // === יש משמרת ===
-                        int count = (shift.getWorkerList() != null) ? shift.getWorkerList().size() : 0;
-                        tvSelectedDate.setText("✅ קיימת משמרת (" + count + " עובדים)");
-
-                        if (count > 0) {
-                            StringBuilder names = new StringBuilder();
-                            for (Worker w : shift.getWorkerList()) {
-                                String name = (w.getfName() != null) ? w.getfName() : "ללא שם";
-                                names.append(name).append(", ");
-                            }
-                            if (names.length() > 2) names.setLength(names.length() - 2);
-                            tvWorkerSummary.setText("משובצים: " + names.toString());
-                        } else {
-                            tvWorkerSummary.setText("משמרת ריקה (אין עובדים)");
-                        }
-
-                        btnGoToManageWorkers.setText("ערוך משמרת");
-                        btnGoToManageWorkers.setBackgroundColor(0xFFFFA726); // כתום
-
-                    } else {
-                        // === אין משמרת ===
-                        tvSelectedDate.setText("📅 תאריך: " + dateToCheck);
-                        tvWorkerSummary.setText("לא קיימת משמרת רשומה");
-
-                        btnGoToManageWorkers.setText("צור משמרת חדשה");
-                        btnGoToManageWorkers.setBackgroundColor(0xFF2196F3); // כחול
+                        // שלב 2: כמה כבר בסידור
+                        dbService.getTodayShifts(dateStr,
+                                new DatabaseService.DatabaseCallback<java.util.List<com.example.myapplication.services.Shift>>() {
+                                    @Override
+                                    public void onCompleted(java.util.List<com.example.myapplication.services.Shift> shifts) {
+                                        int assignedCount = 0;
+                                        if (shifts != null) {
+                                            for (com.example.myapplication.services.Shift s : shifts) {
+                                                if (selectedShiftType.equals(s.getShiftType())
+                                                        && s.getWorkerList() != null) {
+                                                    assignedCount = s.getWorkerList().size();
+                                                    break;
+                                                }
+                                            }
+                                        }
+                                        String reqEmoji      = requestCount > 0 ? "✅" : "⚠️";
+                                        String assignedPart  = assignedCount > 0
+                                                ? "  |  👥 " + assignedCount + " בסידור"
+                                                : "";
+                                        tvAvailableCount.setText(
+                                                reqEmoji + " " + requestCount + " ביקשו"
+                                                + assignedPart);
+                                    }
+                                    @Override
+                                    public void onFailed(Exception e) {
+                                        // הצג לפחות את מספר המבקשים
+                                        String emoji = requestCount > 0 ? "✅" : "⚠️";
+                                        tvAvailableCount.setText(emoji + " " + requestCount + " ביקשו");
+                                    }
+                                });
+                    }
+                    @Override
+                    public void onFailed(Exception e) {
+                        tvAvailableCount.setText("שגיאה בטעינה");
                     }
                 });
-            }
+    }
 
-            @Override
-            public void onFailed(Exception e) {
-                runOnUiThread(() -> {
-                    tvSelectedDate.setText("שגיאה בטעינה");
-                });
-            }
-        });
+    private boolean isShiftExpired() {
+        if (selectedDay == null || selectedShiftType == null) return false;
+        CalendarDay today = CalendarDay.today();
+        // תאריך עבר — תמיד פג תוקף
+        if (selectedDay.isBefore(today)) return true;
+        // היום — בדוק לפי שעה (שעון ישראל)
+        if (selectedDay.equals(today)) {
+            int hour = Calendar.getInstance(TimeZone.getTimeZone("Asia/Jerusalem"))
+                    .get(Calendar.HOUR_OF_DAY);
+            if (TYPE_MORNING.equals(selectedShiftType) && hour >= 14) return true;
+            if (TYPE_EVENING.equals(selectedShiftType) && hour >= 22) return true;
+        }
+        return false;
+    }
+
+    private void updateSubmitButton() {
+        boolean ready = selectedDay != null && selectedShiftType != null && !isShiftExpired();
+        btnGoToManageWorkers.setEnabled(ready);
+        btnGoToManageWorkers.setAlpha(ready ? 1f : 0.45f);
+    }
+
+    private void openManageShifts() {
+        if (selectedDay == null || selectedShiftType == null) {
+            Toast.makeText(this, "יש לבחור תאריך וסוג משמרת", Toast.LENGTH_SHORT).show();
+            return;
+        }
+        if (isShiftExpired()) {
+            Toast.makeText(this, "לא ניתן ליצור משמרת שפג תוקפה", Toast.LENGTH_SHORT).show();
+            return;
+        }
+        String dateStr = String.format("%02d/%02d/%d",
+                selectedDay.getDay(), selectedDay.getMonth(), selectedDay.getYear());
+
+        Intent intent = new Intent(this, ManageShiftsActivity.class);
+        intent.putExtra("SELECTED_DATE", dateStr);
+        intent.putExtra("SELECTED_SHIFT_TYPE", selectedShiftType);
+        startActivity(intent);
+    }
+
+    @Override
+    public boolean onSupportNavigateUp() {
+        finish();
+        return true;
     }
 
     @Override
     protected void onResume() {
         super.onResume();
-        if (selectedDay != null) {
-            checkForExistingShift(selectedDay);
-        }
+        refreshAvailableCount();
     }
 }

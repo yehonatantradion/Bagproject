@@ -4,14 +4,15 @@ import android.os.Bundle;
 import android.view.View;
 
 import androidx.activity.EdgeToEdge;
-import androidx.appcompat.app.AppCompatActivity;
 import androidx.core.graphics.Insets;
 import androidx.core.view.ViewCompat;
 import androidx.core.view.WindowInsetsCompat;
 
+import androidx.appcompat.widget.Toolbar;
+
 import com.example.myapplication.R;
 
-public class ReportsActivity extends AppCompatActivity {
+public class ReportsActivity extends BaseActivity {
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -27,5 +28,15 @@ public class ReportsActivity extends AppCompatActivity {
         });
 
         getWindow().getDecorView().setLayoutDirection(View.LAYOUT_DIRECTION_RTL);
+
+        Toolbar toolbar = findViewById(R.id.toolbar);
+        setSupportActionBar(toolbar);
+        if (getSupportActionBar() != null) getSupportActionBar().setDisplayHomeAsUpEnabled(true);
+    }
+
+    @Override
+    public boolean onSupportNavigateUp() {
+        finish();
+        return true;
     }
 }
